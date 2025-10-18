@@ -1,7 +1,55 @@
-﻿node_modules/
+# Python
 __pycache__/
-*.pyc
+*.py[cod]
+*.class
+*.so
+.Python
+env/
+venv/
+ENV/
+*.egg-info/
+dist/
+build/
+
+# Lambda packages
+*.zip
+lambda-package/
+
+# Environment
 .env
-.vscode/
-.DS_Store
 *.log
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# AWS temp files
+*.json
+!backend/src/**/*.json
+!docs/**/*.json
+
+# Backup & temp
+*-backup/
+scripts-backup/
+*.csv
+*-temp.json
+
+# Audits (mantener local)
+Audits/
+
+# Personal notes
+CLAUDE.md
+project-structure.txt
+powershell-history.csv
+
+# Frontend (agregar después)
+frontend/node_modules/
+frontend/dist/
+
+# Local backups
+local-backups/
+
