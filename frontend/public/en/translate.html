@@ -312,11 +312,11 @@
                     </div>
                     <div class="cost-row">
                         <span>Price per word:</span>
-                        <span>¬0.055</span>
+                        <span>&euro;0.055</span>
                     </div>
                     <div class="cost-row cost-total">
                         <span>Total Cost:</span>
-                        <span id="total-cost">¬0.00</span>
+                        <span id="total-cost">&euro;0.00</span>
                     </div>
                 </div>
             </div>
@@ -424,7 +424,7 @@
             document.getElementById('summary-words').textContent = data.word_count || 0;
 
             const cost = ((data.word_count || 0) * 0.055).toFixed(2);
-            document.getElementById('total-cost').textContent = `¬${cost}`;
+            document.getElementById('total-cost').textContent = `&euro;${cost}`;
 
             // Display pages
             const pagesList = document.getElementById('pages-list');
