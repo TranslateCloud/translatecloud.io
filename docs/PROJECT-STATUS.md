@@ -1,215 +1,327 @@
 # TRANSLATECLOUD - PROJECT STATUS
-Last Updated: 2025-10-18 08:51:47
+Last Updated: 2025-10-18 10:56:54
 
-## PROJECT OVERVIEW
-- **Project Name**: TranslateCloud
-- **Description**: AI-powered website translation platform with document translation support
-- **Tech Stack**: Python (Backend), HTML/CSS/JS (Frontend), PostgreSQL (Database), AWS (Infrastructure)
-- **Domain**: translatecloud.com
-- **Region**: eu-west-1 (Ireland)
-- **Repository**: Local Git (pending remote configuration)
+## CURRENT STATUS: DAY 4 COMPLETED ✅
 
-## CURRENT PROJECT STRUCTURE
+### PRODUCTION API LIVE
+- **URL**: https://e5yug00gdc.execute-api.eu-west-1.amazonaws.com/prod
+- **Status**: Operational
+- **Endpoints**: /, /health, /docs
+
+---
+
+## PROJECT STRUCTURE
+
 \\\
 translatecloud/
-+-- frontend/
-|   +-- public/
-|   |   +-- en/ (English pages: index, about, contact, login, pricing)
-|   |   +-- es/ (Spanish pages: index, sobre-nosotros, contactos, iniciar-sesion, precios)
-|   +-- css/shared.css
-|   +-- src/ (components, hooks, pages, services, types, utils)
-+-- backend/
-|   +-- src/
-|   |   +-- config/ (settings.py)
-|   |   +-- core/ (html_reconstructor, marian_translator, web_extractor)
-|   |   +-- functions/ (auth, payments, translation, web-crawler, webhooks)
-|   |   +-- tests/ (test_translator.py)
-|   |   +-- utils/
-|   +-- requirements.txt, README.md, .env.example
-+-- scripts/
-|   +-- aws/
-|   +-- database/ (schema.sql, seed-data.sql, create-api-user.sql, deploy-schema.ps1, verify-schema.sql)
-+-- docs/ (api, architecture, deployment)
-+-- infrastructure/ (bin, lib)
-+-- Audits/ (security audits)
-+-- blocks check/ (S3 policies and configs)
+├── backend/                    # Python FastAPI (commiteado)
+│   ├── src/
+│   │   ├── api/
+│   │   │   ├── routers/       # 4 routers (users, projects, translations, payments)
+│   │   │   └── dependencies/  # Auth middleware (JWT)
+│   │   ├── config/            # Settings, database
+│   │   └── schemas/           # Pydantic models
+│   ├── lambda_handler.py      # AWS Lambda handler
+│   ├── requirements.txt       # Python dependencies
+│   └── test_db_connection.py
+│
+├── frontend/                   # Website HTML/CSS (commiteado)
+│   ├── css/
+│   │   └── shared.css
+│   └── public/
+│       ├── index.html         # Landing page
+│       ├── en/index.html      # English version
+│       └── es/index.html      # Spanish version
+│
+├── scripts/                    # Deployment scripts (commiteado)
+│   └── deploy-lambda.ps1      # Lambda deployment
+│
+├── docs/                       # Documentation (commiteado)
+│   ├── PROJECT-STATUS.md      # This file
+│   ├── TODO.md                # Task list
+│   ├── COMPLIANCE.md          # GDPR guide
+│   └── DAY-*.md               # Daily logs
+│
+├── local-backups/             # LOCAL ONLY (no Git)
+│   ├── powershell-history-*.csv
+│   ├── *.json (AWS configs)
+│   └── project-structure.txt
+│
+├── Audits/                    # LOCAL ONLY (no Git)
+│   └── security-reports/
+│
+└── .gitignore                 # Git ignore rules
 \\\
+
+---
+
+## INFRASTRUCTURE (AWS eu-west-1)
+
+### Backend API
+- **Lambda Function**: translatecloud-api
+  - Runtime: Python 3.11
+  - Memory: 512 MB
+  - Timeout: 30s
+  - Package: 38 MB
+  - VPC: Connected to RDS
+
+- **API Gateway**: e5yug00gdc
+  - Type: REST API
+  - Stage: prod
+  - Endpoint: Regional
+
+### Database
+- **RDS PostgreSQL**: translatecloud-db-prod
+  - Engine: PostgreSQL 15.14
+  - Instance: db.t3.micro
+  - Storage: 20GB gp3
+  - Multi-AZ: No
+  - Data: 3 users, 5 projects, 6 translations
+
+### Authentication
+- **Cognito User Pool**: eu-west-1_FH51nx4II
+  - Client ID: 6he757k99vkr15llk139usiub6
+  - MFA: Off
+  - Password Policy: 8+ chars, upper+lower+numbers
+
+### Secrets & Security
+- **Secrets Manager**: prod/translatecloud/db
+- **Security Groups**:
+  - Lambda: sg-001cd631daa9f91c5
+  - RDS: sg-082bb136be86b7e0b
+- **IAM Role**: translatecloud-lambda-role
+
+### Storage (Día 1-2)
+- **S3 Bucket**: translatecloud-frontend-prod
+- **CloudFront**: d3sa5i2s0uyozh.cloudfront.net
+- **Domain**: translatecloud.com (Route53)
+
+---
 
 ## DEVELOPMENT TIMELINE
 
-### DAY 1: INFRASTRUCTURE & FRONTEND - COMPLETED
-**Date**: January 2025
+### ✅ DAY 1: INFRASTRUCTURE & FRONTEND
+- [x] Domain registration (Route53)
+- [x] SSL Certificate (ACM)
+- [x] S3 bucket for frontend
+- [x] CloudFront distribution
+- [x] Static website deployed
 
-**Frontend Deployment**
-- S3 bucket: translatecloud-frontend-prod
-- Static website (HTML/CSS/JS)
-- Bilingual (English/Spanish)
-- CloudFront CDN + SSL (ACM)
-- Route 53 DNS: translatecloud.com
-- Website live
+### ✅ DAY 2: DATABASE SETUP
+- [x] RDS PostgreSQL created
+- [x] Database schema designed
+- [x] API user created
+- [x] Secrets Manager configured
+- [x] Seed data inserted
 
-**S3 Buckets**
-- translatecloud-frontend-prod (hosting)
-- translatecloud-uploads-prod (user uploads)
-- translatecloud-translations-prod (translations)
-- translatecloud-web-projects (scraped sites)
-- translatecloud-backups-prod (backups)
-- translatecloud-logs-prod (logs)
+### ✅ DAY 3: BACKEND API
+- [x] FastAPI installed
+- [x] Project structure created
+- [x] 4 routers implemented (12 endpoints)
+- [x] Pydantic schemas
+- [x] Database connection tested
+- [x] Local development working
 
-**Security**
-- Bucket policies, CORS, AES-256 encryption
-- Lifecycle policies (90-day auto-delete)
-- Access logging
+### ✅ DAY 4: DEPLOYMENT & AUTH
+- [x] Cognito User Pool created
+- [x] JWT authentication middleware
+- [x] Lambda function deployed
+- [x] API Gateway configured
+- [x] Production API live
+- [x] GDPR compliance documentation
 
-### DAY 2: DATABASE SETUP - COMPLETED
-**Date**: 2025-10-18
+### ⏳ DAY 5: INTEGRATION & PAYMENTS (NEXT)
+- [ ] Connect frontend to API
+- [ ] Implement signup/login UI
+- [ ] Stripe integration
+- [ ] Payment endpoints
+- [ ] Create legal pages (Privacy, Terms)
+- [ ] Cookie banner
 
-**RDS PostgreSQL**
-- Instance: translatecloud-db-prod
-- Engine: PostgreSQL 15.14
-- Class: db.t3.micro (2 vCPU, 1GB RAM)
-- Storage: 20GB gp3
-- Endpoint: translatecloud-db-prod.c3asoiwiy0l1.eu-west-1.rds.amazonaws.com:5432
+---
 
-**Database Schema (4 Tables)**
-1. users (cognito_sub, email, plan, word_limit, stripe_customer_id)
-2. projects (url, source_lang, target_lang, status, word counts)
-3. translations (source_text, translated_text, engine, word_count)
-4. payments (stripe_payment_intent_id, amount, status)
+## API ENDPOINTS
 
-**Security**
-- Security Group: translatecloud-db-sg
-- DB Subnet Group: translatecloud-db-subnet-group
-- Master: postgres
-- API User: translatecloud_api (restricted permissions)
-- Secrets Manager: translatecloud/db/api-credentials
+### Public
+- \GET  /\ - API info
+- \GET  /health\ - Health check
+- \GET  /docs\ - Swagger UI
+- \GET  /openapi.json\ - OpenAPI spec
 
-**Test Data**
-- 3 users (free, pro, business)
-- 5 projects
-- 6 translations
-- 2 payments
+### Users (Auth required)
+- \POST   /api/users/signup\ - Register
+- \POST   /api/users/login\ - Login
+- \GET    /api/users/me\ - Profile
+- \DELETE /api/users/me\ - Delete account (GDPR)
+- \GET    /api/users/me/export\ - Export data (GDPR)
 
-### DAY 3: BACKEND API - COMPLETED
-**Date**: 2025-10-18
+### Projects (Auth required)
+- \POST /api/projects\ - Create project
+- \GET  /api/projects\ - List projects
+- \GET  /api/projects/{id}\ - Get project
 
-**Architecture**
-- Language: Python 3.11+
-- Framework: FastAPI
-- Deployment: AWS Lambda + API Gateway
-- Database: psycopg2
-- Auth: AWS Cognito JWT
-- Secrets: AWS Secrets Manager
+### Translations (Auth required)
+- \POST /api/translations\ - Translate
+- \GET  /api/translations\ - List translations
+- \GET  /api/translations/{id}\ - Get translation
 
-**Existing Backend**
-- MarianMT translation engine
-- HTML reconstruction
-- Web content extractor
-- Test suite
+### Payments (Auth required)
+- \POST /api/payments/create-intent\ - Create payment
+- \POST /api/payments/webhook\ - Stripe webhook
 
-**API Endpoints (To Implement)**
-- POST /api/auth/signup
-- POST /api/auth/login
-- GET /api/user/profile
-- PUT /api/user/profile
-- GET /api/projects
-- POST /api/projects
-- GET /api/projects/:id
-- POST /api/translations
-- GET /api/translations/:projectId
-- POST /api/payments/create-intent
-- POST /api/payments/webhook
+---
 
-**Tasks Today**
-- [ ] Setup FastAPI
-- [ ] Database connection
-- [ ] Secrets Manager integration
-- [ ] JWT auth middleware
-- [ ] CRUD endpoints
-- [ ] Deploy to Lambda
-- [ ] Configure API Gateway
-- [ ] End-to-end testing
+## GDPR COMPLIANCE
 
-## AWS RESOURCES
+### Implemented
+- [x] EU Region (eu-west-1 Ireland)
+- [x] Encryption in transit (HTTPS)
+- [x] Encryption at rest (RDS, S3)
+- [x] Password hashing (Cognito)
+- [x] Secrets Manager for credentials
 
-**Compute**
-- [ ] Lambda (backend API)
-- [ ] API Gateway
+### Pending
+- [ ] Privacy Policy (ES/EN)
+- [ ] Terms & Conditions (ES/EN)
+- [ ] Cookie Policy
+- [ ] Legal Notice (Spain)
+- [ ] Consent checkboxes
+- [ ] GDPR endpoints (delete, export)
+- [ ] Audit logging
+- [ ] AWS DPA signature
 
-**Storage**
-- [x] S3 (6 buckets)
-- [x] RDS PostgreSQL
+### Documentation
+- Compliance guide: \docs/COMPLIANCE.md\
+- Task list: \docs/TODO.md\
 
-**Networking**
-- [x] VPC (public/private subnets)
-- [x] Security groups
-- [x] CloudFront
+---
 
-**Security**
-- [ ] Cognito User Pool
-- [x] Secrets Manager
-- [x] ACM Certificate
+## COSTS (Estimated Monthly)
 
-**DNS**
-- [x] Route 53
-- [x] CloudFront
+| Service | Cost |
+|---------|------|
+| RDS PostgreSQL (t3.micro) | €15 |
+| Lambda (1M invocations) | €5 |
+| API Gateway (1M requests) | €3.50 |
+| S3 Storage + Requests | €5 |
+| CloudFront (50GB transfer) | €5 |
+| Route53 (1 hosted zone) | €0.50 |
+| Secrets Manager | €0.40 |
+| Cognito | Free (up to 50k MAU) |
+| **TOTAL** | **~€34/month** |
 
-## COSTS (Monthly EUR)
+*Actual costs depend on usage*
 
-**Current**
-- RDS: 15
-- S3: 5
-- CloudFront: 5
-- Route 53: 0.50
-- Secrets Manager: 0.40
-- Subtotal: 26
+---
 
-**After Day 3**
-- Lambda: 5
-- API Gateway: 3.50
-- Cognito: Free (50k MAU)
-- Total: 35-40
+## GIT REPOSITORY
 
-## GIT STATUS
+### Committed Files
+- \ackend/\ - API source code
+- \rontend/\ - Website files
+- \scripts/\ - Deployment scripts
+- \docs/\ - Documentation
+- \.gitignore\ - Ignore rules
 
-**Commits**
-- Day 1: Frontend infrastructure
-- Day 2: PostgreSQL schema, API user, Secrets Manager, seed data
+### Local Only (Not in Git)
+- \local-backups/\ - PowerShell history, AWS configs
+- \Audits/\ - Security reports
+- \*.zip\ - Lambda packages
+- \CLAUDE.md\ - Personal notes
 
-**Pending**
-- Remote not configured
-- Need GitHub/GitLab push
+### Latest Commits
+\\\
+9485558 Day 4: Add frontend, scripts, and .gitignore
+d1688c5 Day 4: Lambda deployment, API Gateway, Cognito auth
+9c69674 Day 4: Cognito auth + GDPR compliance documentation
+68fea78 Day 3: Backend API complete - database connection working
+52402dd Day 3: Backend API - FastAPI structure, routers
+\\\
 
-**Tracked**
-- scripts/database/*.sql
-- database-schema.sql
+---
 
 ## NEXT STEPS
 
-**Day 3 (Today)**
-1. FastAPI setup
-2. Database connection
-3. Cognito auth
-4. API endpoints
-5. Lambda deployment
-6. Testing
+### Priority 1 (Day 5)
+1. Connect frontend JavaScript to API
+2. Implement login/signup forms
+3. Integrate Stripe payments
+4. Create legal pages (GDPR)
 
-**Day 4**
-- Frontend-backend integration
-- Auth flow
-- Dashboard
-- Translation submission
+### Priority 2 (Week 2)
+1. Translation UI and file upload
+2. User dashboard
+3. Admin panel
+4. Analytics
 
-**Day 5**
-- Stripe payments
-- Webhooks
-- Monitoring
-- Security audit
+### Priority 3 (Future)
+1. Multi-language support
+2. Translation memory
+3. Batch processing
+4. Mobile app
 
-## DOCUMENTATION
+---
 
-- [x] PROJECT-STATUS.md
-- [ ] INFRASTRUCTURE.md
-- [ ] API-DOCUMENTATION.md
-- [ ] DEPLOYMENT-GUIDE.md
-- [ ] TODO.md
+## USEFUL COMMANDS
+
+### API Testing
+\\\powershell
+# Health check
+curl https://e5yug00gdc.execute-api.eu-west-1.amazonaws.com/prod/health
+
+# API docs
+start https://e5yug00gdc.execute-api.eu-west-1.amazonaws.com/prod/docs
+\\\
+
+### Database Access
+\\\powershell
+# Get DB password
+aws secretsmanager get-secret-value --secret-id prod/translatecloud/db --region eu-west-1
+
+# Connect to RDS
+psql -h translatecloud-db-prod.c3asoiwiy0l1.eu-west-1.rds.amazonaws.com -U translatecloud_api -d postgres
+\\\
+
+### Lambda Deployment
+\\\powershell
+# Update Lambda code
+aws lambda update-function-code --function-name translatecloud-api --zip-file fileb://backend/translatecloud-api-full.zip --region eu-west-1
+\\\
+
+### Git Commands
+\\\powershell
+# Status
+git status
+
+# Commit
+git add .
+git commit -m "message"
+
+# History
+git log --oneline -10
+\\\
+
+---
+
+## CONTACTS & RESOURCES
+
+### AWS Resources
+- Console: https://console.aws.amazon.com
+- Billing: https://console.aws.amazon.com/billing
+- Account ID: 721096479937
+
+### Documentation
+- FastAPI: https://fastapi.tiangolo.com
+- AWS Lambda: https://docs.aws.amazon.com/lambda
+- Cognito: https://docs.aws.amazon.com/cognito
+- GDPR: https://www.aepd.es
+
+### Support
+- AWS Support: https://console.aws.amazon.com/support
+- AEPD (Spain): https://www.aepd.es
+
+---
+
+**Project Status**: ✅ OPERATIONAL
+**Last Deployment**: 2025-10-18 10:56
+**Environment**: Production (eu-west-1)
