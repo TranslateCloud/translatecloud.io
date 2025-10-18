@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Website Translation | TranslateCloud</title>
+    <link rel="icon" type="image/svg+xml" href="/assets/images/favicon.svg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+        :root {
+            --color-primary: #111827;
+            --color-accent: #0EA5E9;
+            --color-accent-hover: #0284C7;
+            --color-white: #FFFFFF;
+            --color-gray-50: #F9FAFB;
+            --color-gray-100: #F3F4F6;
+            --color-gray-200: #E5E7EB;
+            --color-gray-300: #D1D5DB;
+            --color-gray-500: #6B7280;
+            --color-gray-600: #4B5563;
+            --color-gray-700: #374151;
+            --color-gray-900: #111827;
+            --color-success: #10B981;
+            --color-warning: #F59E0B;
+            --color-error: #EF4444;
+            --font-sans: 'IBM Plex Sans', sans-serif;
+            --text-sm: 0.875rem;
+            --text-base: 1rem;
+            --text-lg: 1.125rem;
+            --text-xl: 1.25rem;
+            --text-2xl: 1.5rem;
+            --space-2: 0.5rem;
+            --space-3: 0.75rem;
+            --space-4: 1rem;
+            --space-6: 1.5rem;
+            --space-8: 2rem;
+            --space-12: 3rem;
+            --radius-md: 0.375rem;
+            --radius-lg: 0.5rem;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: var(--font-sans);
+            background-color: var(--color-gray-50);
+            color: var(--color-gray-900);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: var(--space-8);
+        }
+
+        .header {
+            background: var(--color-white);
+            border-bottom: 1px solid var(--color-gray-200);
+            padding: var(--space-4) 0;
+            margin-bottom: var(--space-8);
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 var(--space-8);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: var(--text-xl);
+            font-weight: 600;
+            color: var(--color-gray-900);
+            text-decoration: none;
+        }
+
+        .btn {
+            padding: var(--space-2) var(--space-4);
+            border-radius: var(--radius-md);
+            font-weight: 500;
+            font-size: var(--text-sm);
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background: var(--color-accent);
+            color: var(--color-white);
+        }
+
+        .btn-primary:hover { background: var(--color-accent-hover); }
+        .btn-primary:disabled {
+            background: var(--color-gray-300);
+            cursor: not-allowed;
+        }
+
+        .btn-secondary {
+            background: var(--color-white);
+            color: var(--color-gray-700);
+            border: 1px solid var(--color-gray-300);
+        }
+
+        .card {
+            background: var(--color-white);
+            border-radius: var(--radius-lg);
+            padding: var(--space-8);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            margin-bottom: var(--space-6);
+        }
+
+        .card-title {
+            font-size: var(--text-xl);
+            font-weight: 500;
+            margin-bottom: var(--space-6);
+            color: var(--color-gray-900);
+        }
+
+        .form-group {
+            margin-bottom: var(--space-6);
+        }
+
+        .form-label {
+            display: block;
+            font-size: var(--text-sm);
+            font-weight: 500;
+            color: var(--color-gray-700);
+            margin-bottom: var(--space-2);
+        }
+
+        .form-input, .form-select {
+            width: 100%;
+            padding: var(--space-3);
+            border: 1px solid var(--color-gray-300);
+            border-radius: var(--radius-md);
+            font-size: var(--text-base);
+            font-family: var(--font-sans);
+        }
+
+        .form-input:focus, .form-select:focus {
+            outline: none;
+            border-color: var(--color-accent);
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: var(--space-4);
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: var(--color-gray-200);
+            border-radius: 4px;
+            overflow: hidden;
+            margin: var(--space-4) 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--color-accent);
+            transition: width 0.3s;
+        }
+
+        .alert {
+            padding: var(--space-4);
+            border-radius: var(--radius-md);
+            margin-bottom: var(--space-4);
+        }
+
+        .alert-success {
+            background: #D1FAE5;
+            color: #065F46;
+            border: 1px solid #10B981;
+        }
+
+        .alert-error {
+            background: #FEE2E2;
+            color: #991B1B;
+            border: 1px solid #EF4444;
+        }
+
+        .alert-warning {
+            background: #FEF3C7;
+            color: #92400E;
+            border: 1px solid #F59E0B;
+        }
+
+        .pages-list {
+            max-height: 300px;
+            overflow-y: auto;
+            border: 1px solid var(--color-gray-200);
+            border-radius: var(--radius-md);
+            padding: var(--space-4);
+        }
+
+        .page-item {
+            padding: var(--space-2) 0;
+            border-bottom: 1px solid var(--color-gray-100);
+            font-size: var(--text-sm);
+        }
+
+        .page-item:last-child {
+            border-bottom: none;
+        }
+
+        .cost-summary {
+            background: var(--color-gray-50);
+            padding: var(--space-6);
+            border-radius: var(--radius-md);
+            margin-top: var(--space-6);
+        }
+
+        .cost-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: var(--space-3);
+            font-size: var(--text-base);
+        }
+
+        .cost-total {
+            font-size: var(--text-xl);
+            font-weight: 600;
+            color: var(--color-gray-900);
+            border-top: 2px solid var(--color-gray-300);
+            padding-top: var(--space-3);
+            margin-top: var(--space-3);
+        }
+
+        .hidden { display: none; }
+
+        @media (max-width: 768px) {
+            .grid-2 { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-content">
+            <a href="/en/dashboard.html" class="logo">TranslateCloud</a>
+            <button class="btn btn-secondary" onclick="Auth.logout()">Sign Out</button>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Step 1: URL Input -->
+        <div class="card" id="step1">
+            <h2 class="card-title">Translate Your Website</h2>
+
+            <div class="form-group">
+                <label class="form-label">Website URL</label>
+                <input
+                    type="url"
+                    class="form-input"
+                    id="website-url"
+                    placeholder="https://your-website.com"
+                    required
+                >
+            </div>
+
+            <div class="grid-2">
+                <div class="form-group">
+                    <label class="form-label">Source Language</label>
+                    <select class="form-select" id="source-lang">
+                        <option value="en">English</option>
+                        <option value="es">Spanish</option>
+                        <option value="fr">French</option>
+                        <option value="de">German</option>
+                        <option value="it">Italian</option>
+                        <option value="pt">Portuguese</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Target Language</label>
+                    <select class="form-select" id="target-lang">
+                        <option value="es">Spanish</option>
+                        <option value="en">English</option>
+                        <option value="fr">French</option>
+                        <option value="de">German</option>
+                        <option value="it">Italian</option>
+                        <option value="pt">Portuguese</option>
+                    </select>
+                </div>
+            </div>
+
+            <button class="btn btn-primary" id="crawl-btn" onclick="startCrawl()">
+                Analyze Website
+            </button>
+        </div>
+
+        <!-- Step 2: Preview & Confirmation -->
+        <div class="card hidden" id="step2">
+            <h2 class="card-title">Website Analysis Complete</h2>
+
+            <div id="preview-content">
+                <p><strong>Pages Found:</strong> <span id="pages-count">0</span></p>
+                <p><strong>Total Words:</strong> <span id="words-count">0</span></p>
+
+                <div class="pages-list" id="pages-list"></div>
+
+                <div class="cost-summary">
+                    <div class="cost-row">
+                        <span>Words to translate:</span>
+                        <span id="summary-words">0</span>
+                    </div>
+                    <div class="cost-row">
+                        <span>Price per word:</span>
+                        <span>¬0.055</span>
+                    </div>
+                    <div class="cost-row cost-total">
+                        <span>Total Cost:</span>
+                        <span id="total-cost">¬0.00</span>
+                    </div>
+                </div>
+            </div>
+
+            <button class="btn btn-primary" onclick="confirmTranslation()">
+                Confirm & Translate
+            </button>
+            <button class="btn btn-secondary" onclick="resetForm()">
+                Start Over
+            </button>
+        </div>
+
+        <!-- Step 3: Processing -->
+        <div class="card hidden" id="step3">
+            <h2 class="card-title">Translating Your Website</h2>
+
+            <div class="progress-bar">
+                <div class="progress-fill" id="progress-fill" style="width: 0%"></div>
+            </div>
+
+            <p id="progress-text" style="text-align: center; color: var(--color-gray-600); margin-top: var(--space-4);">
+                Starting translation...
+            </p>
+        </div>
+
+        <!-- Step 4: Download -->
+        <div class="card hidden" id="step4">
+            <h2 class="card-title"> Translation Complete!</h2>
+
+            <div class="alert alert-success">
+                Your website has been successfully translated. Download the ZIP file below.
+            </div>
+
+            <button class="btn btn-primary" onclick="downloadZip()" style="width: 100%; margin-bottom: var(--space-4);">
+                <i data-lucide="download"></i>
+                Download Translated Website (ZIP)
+            </button>
+
+            <button class="btn btn-secondary" onclick="resetForm()" style="width: 100%;">
+                Translate Another Website
+            </button>
+        </div>
+
+        <!-- Error Display -->
+        <div class="alert alert-error hidden" id="error-alert"></div>
+    </div>
+
+    <script src="../assets/js/cookies.js"></script>
+    <script src="../assets/js/api.js"></script>
+    <script src="../assets/js/auth.js"></script>
+    <script src="../assets/js/dark-mode.js"></script>
+
+    <script>
+        lucide.createIcons();
+
+        // Protect route
+        Auth.requireAuth('/en/translate.html');
+
+        let translationData = null;
+
+        async function startCrawl() {
+            const url = document.getElementById('website-url').value;
+            const sourceLang = document.getElementById('source-lang').value;
+            const targetLang = document.getElementById('target-lang').value;
+
+            if (!url) {
+                showError('Please enter a website URL');
+                return;
+            }
+
+            if (sourceLang === targetLang) {
+                showError('Source and target languages must be different');
+                return;
+            }
+
+            try {
+                const btn = document.getElementById('crawl-btn');
+                btn.disabled = true;
+                btn.textContent = 'Analyzing...';
+
+                // Call backend crawler API
+                const response = await API.post('/api/projects/crawl', {
+                    url,
+                    source_language: sourceLang,
+                    target_language: targetLang
+                });
+
+                translationData = response;
+                showPreview(response);
+
+            } catch (error) {
+                console.error('Crawl error:', error);
+                showError(error.message || 'Failed to analyze website. Please try again.');
+                document.getElementById('crawl-btn').disabled = false;
+                document.getElementById('crawl-btn').textContent = 'Analyze Website';
+            }
+        }
+
+        function showPreview(data) {
+            document.getElementById('step1').classList.add('hidden');
+            document.getElementById('step2').classList.remove('hidden');
+
+            document.getElementById('pages-count').textContent = data.pages_count || 0;
+            document.getElementById('words-count').textContent = data.word_count || 0;
+            document.getElementById('summary-words').textContent = data.word_count || 0;
+
+            const cost = ((data.word_count || 0) * 0.055).toFixed(2);
+            document.getElementById('total-cost').textContent = `¬${cost}`;
+
+            // Display pages
+            const pagesList = document.getElementById('pages-list');
+            pagesList.innerHTML = '';
+            if (data.pages && data.pages.length > 0) {
+                data.pages.forEach(page => {
+                    const div = document.createElement('div');
+                    div.className = 'page-item';
+                    div.textContent = page.url || page;
+                    pagesList.appendChild(div);
+                });
+            }
+        }
+
+        async function confirmTranslation() {
+            document.getElementById('step2').classList.add('hidden');
+            document.getElementById('step3').classList.remove('hidden');
+
+            try {
+                // Start translation
+                const response = await API.post('/api/projects/translate', {
+                    project_id: translationData.project_id,
+                    url: document.getElementById('website-url').value,
+                    source_language: document.getElementById('source-lang').value,
+                    target_language: document.getElementById('target-lang').value,
+                    word_count: translationData.word_count
+                });
+
+                // Poll for progress
+                pollProgress(response.project_id);
+
+            } catch (error) {
+                console.error('Translation error:', error);
+                showError('Translation failed. Please try again.');
+                resetForm();
+            }
+        }
+
+        async function pollProgress(projectId) {
+            const interval = setInterval(async () => {
+                try {
+                    const status = await API.get(`/api/projects/${projectId}`);
+
+                    const progress = status.progress || 0;
+                    document.getElementById('progress-fill').style.width = progress + '%';
+                    document.getElementById('progress-text').textContent =
+                        status.status_message || `Translating... ${progress}%`;
+
+                    if (status.status === 'completed') {
+                        clearInterval(interval);
+                        translationData.download_url = status.zip_file_url;
+                        showDownload();
+                    } else if (status.status === 'failed') {
+                        clearInterval(interval);
+                        showError('Translation failed. Please contact support.');
+                        resetForm();
+                    }
+                } catch (error) {
+                    console.error('Progress poll error:', error);
+                }
+            }, 2000);
+        }
+
+        function showDownload() {
+            document.getElementById('step3').classList.add('hidden');
+            document.getElementById('step4').classList.remove('hidden');
+        }
+
+        function downloadZip() {
+            if (translationData && translationData.download_url) {
+                window.location.href = translationData.download_url;
+            }
+        }
+
+        function resetForm() {
+            document.getElementById('step1').classList.remove('hidden');
+            document.getElementById('step2').classList.add('hidden');
+            document.getElementById('step3').classList.add('hidden');
+            document.getElementById('step4').classList.add('hidden');
+            document.getElementById('error-alert').classList.add('hidden');
+
+            document.getElementById('website-url').value = '';
+            document.getElementById('crawl-btn').disabled = false;
+            document.getElementById('crawl-btn').textContent = 'Analyze Website';
+            document.getElementById('progress-fill').style.width = '0%';
+
+            translationData = null;
+        }
+
+        function showError(message) {
+            const alert = document.getElementById('error-alert');
+            alert.textContent = message;
+            alert.classList.remove('hidden');
+            setTimeout(() => alert.classList.add('hidden'), 5000);
+        }
+    </script>
+</body>
+</html>

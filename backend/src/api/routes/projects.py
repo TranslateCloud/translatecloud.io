@@ -113,13 +113,117 @@ async def delete_project(
         "DELETE FROM projects WHERE id = %s AND user_id = %s RETURNING id",
         (project_id, user_id)
     )
-    
+
     deleted = cursor.fetchone()
-    
+
     if not deleted:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Project not found"
         )
-    
+
     return None
+
+@router.post("/crawl")
+async def crawl_website(
+    url: str,
+    source_language: str,
+    target_language: str,
+    user_id: str,
+    cursor: RealDictCursor = Depends(get_db)
+):
+    """Crawl website and return page count and word count"""
+    from src.core.web_extractor import crawl_website as extract_web
+
+    try:
+        # Crawl website (max 50 pages for MVP)
+        result = await extract_web(url, max_pages=50)
+
+        # Create project
+        project_id = str(uuid.uuid4())
+        cursor.execute(
+            '''
+            INSERT INTO projects (id, user_id, name, source_url, source_language, target_language,
+                                pages_count, word_count, status)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
+            RETURNING *
+            ''',
+            (
+                project_id,
+                user_id,
+                f"Translation: {url}",
+                url,
+                source_language,
+                target_language,
+                result['pages_count'],
+                result['word_count'],
+                'analyzed'
+            )
+        )
+
+        project = cursor.fetchone()
+
+        return {
+            'project_id': project_id,
+            'pages_count': result['pages_count'],
+            'word_count': result['word_count'],
+            'pages': result['pages'],
+            'estimated_cost': result['word_count'] * 0.055
+        }
+
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Crawl failed: {str(e)}"
+        )
+
+@router.post("/translate")
+async def translate_website(
+    project_id: str,
+    url: str,
+    source_language: str,
+    target_language: str,
+    word_count: int,
+    user_id: str,
+    cursor: RealDictCursor = Depends(get_db)
+):
+    """Start website translation job"""
+    from src.core.marian_translator import translate_content
+    from src.core.html_reconstructor import rebuild_website
+    import boto3
+
+    try:
+        # Update project status
+        cursor.execute(
+            "UPDATE projects SET status = %s WHERE id = %s AND user_id = %s",
+            ('processing', project_id, user_id)
+        )
+
+        # This would normally be a background job via SQS
+        # For MVP, we'll process synchronously (with timeout limits)
+
+        # TODO: Implement actual translation pipeline
+        # 1. Extract HTML from crawled pages
+        # 2. Translate content using MarianMT or Claude API
+        # 3. Rebuild HTML with translated content
+        # 4. Generate ZIP file
+        # 5. Upload to S3
+        # 6. Update project with download URL
+
+        # For now, return pending status
+        return {
+            'project_id': project_id,
+            'status': 'processing',
+            'progress': 0,
+            'status_message': 'Translation queued'
+        }
+
+    except Exception as e:
+        cursor.execute(
+            "UPDATE projects SET status = %s WHERE id = %s",
+            ('failed', project_id)
+        )
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Translation failed: {str(e)}"
+        )
