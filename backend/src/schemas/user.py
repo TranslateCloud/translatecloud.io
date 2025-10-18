@@ -8,7 +8,10 @@ class UserBase(BaseModel):
     company: Optional[str] = None
 
 class UserCreate(UserBase):
-    cognito_sub: str
+    password: str
+    first_name: Optional[str] = None
+    last_name: Optional[str] = None
+    cognito_sub: Optional[str] = None
 
 class UserUpdate(BaseModel):
     full_name: Optional[str] = None
