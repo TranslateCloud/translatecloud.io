@@ -1,75 +1,103 @@
 # TRANSLATECLOUD - TODO LIST
-Last Updated: 2025-10-18 08:51:47
+Last Updated: 2025-10-18 10:10:37
 
-## DAY 3 - BACKEND API (TODAY)
+## DAY 4 - DEPLOYMENT & AUTH (IN PROGRESS)
 
 ### High Priority
-- [ ] Install FastAPI + dependencies
-- [ ] Create FastAPI app structure
-- [ ] Configure database connection (psycopg2)
-- [ ] Integrate AWS Secrets Manager
-- [ ] Implement JWT auth middleware
-- [ ] Create user endpoints (GET/PUT profile)
-- [ ] Create project endpoints (GET/POST/GET by ID)
-- [ ] Create translation endpoints (POST/GET by project)
-- [ ] Package for Lambda deployment
-- [ ] Deploy to Lambda
-- [ ] Configure API Gateway
-- [ ] Test all endpoints with Postman
+- [x] Crear Cognito User Pool
+- [x] Configurar JWT authentication middleware
+- [ ] Desplegar API a AWS Lambda
+- [ ] Configurar API Gateway
+- [ ] Probar autenticación end-to-end
+- [ ] Conectar frontend con backend
 
 ### Medium Priority
-- [ ] Error handling middleware
-- [ ] Request validation
-- [ ] Logging setup (CloudWatch)
-- [ ] CORS configuration
 - [ ] Rate limiting
-
-### Low Priority
-- [ ] API documentation (Swagger)
-- [ ] Unit tests for endpoints
-
-## DAY 4 - FRONTEND INTEGRATION
-
-- [ ] Update frontend to call API
-- [ ] Implement login/signup UI
-- [ ] Create user dashboard
-- [ ] Project creation form
-- [ ] Translation submission interface
-- [ ] Display translation results
+- [ ] Error handling mejorado
+- [ ] Logging CloudWatch
+- [ ] Monitoreo básico
 
 ## DAY 5 - PAYMENTS & PRODUCTION
 
-- [ ] Create Stripe account
-- [ ] Integrate Stripe SDK
-- [ ] Payment intent creation endpoint
+- [ ] Crear cuenta Stripe
+- [ ] Integrar Stripe SDK
+- [ ] Payment intent endpoints
 - [ ] Webhook handling
 - [ ] Subscription management
 - [ ] Usage tracking
-- [ ] CloudWatch alarms
-- [ ] Security audit
 
-## WEEK 2 - ADVANCED FEATURES
+## WEEK 2 - FEATURES
 
-- [ ] Document upload feature
-- [ ] Batch translation processing
-- [ ] Translation memory system
+- [ ] Document upload/translation
+- [ ] Batch processing
+- [ ] Translation memory
 - [ ] Analytics dashboard
 - [ ] Admin panel
-- [ ] Email notifications (SES)
 
-## INFRASTRUCTURE IMPROVEMENTS
+## GDPR & COMPLIANCE (PRIORITARIO)
 
-- [ ] Configure Git remote (GitHub)
-- [ ] Setup CI/CD pipeline
-- [ ] Automated testing
-- [ ] Multi-region deployment
-- [ ] Backup automation
-- [ ] Disaster recovery plan
+### Legal Requirements
+- [ ] Política de Privacidad (ES/EN)
+- [ ] Términos y Condiciones (ES/EN)
+- [ ] Cookie Policy
+- [ ] Aviso Legal (España)
+- [ ] Consentimiento explícito (checkbox, no pre-marcado)
+- [ ] Double opt-in para emails
+
+### Data Protection
+- [ ] Implementar "Derecho al Olvido" (DELETE user endpoint)
+- [ ] Implementar "Derecho de Acceso" (GET all user data)
+- [ ] Implementar "Portabilidad de Datos" (export user data JSON)
+- [ ] Implementar "Rectificación" (UPDATE user data)
+- [ ] Data retention policies (auto-delete después X días inactivo)
+- [ ] Minimización de datos (solo recoger lo necesario)
+
+### Security & Privacy
+- [x] Cifrado en tránsito (HTTPS)
+- [x] Cifrado en reposo (RDS, S3)
+- [ ] Logs de auditoría (quién accedió qué y cuándo)
+- [ ] IP logging con consentimiento
+- [ ] Anonimización de datos en analytics
+- [x] Password hashing (Cognito)
+- [ ] MFA opcional para usuarios
+- [ ] Session timeout (30 min inactividad)
+
+### Compliance Documentation
+- [ ] Registro de Actividades de Tratamiento (ROPA)
+- [ ] Evaluación de Impacto (DPIA) si aplica
+- [ ] Nombrar DPO si aplica
+- [ ] Contrato AWS DPA
+- [ ] Medidas técnicas y organizativas
+
+### User Rights Endpoints
+- [ ] DELETE /api/users/me (derecho al olvido)
+- [ ] GET /api/users/me/data (acceso a datos)
+- [ ] GET /api/users/me/export (portabilidad JSON)
+- [ ] PUT /api/users/me/consent (consentimientos)
+- [ ] GET /api/users/me/audit-log (historial)
+
+### Frontend Compliance
+- [ ] Banner de cookies
+- [ ] Formulario consentimiento signup
+- [ ] Links políticas en footer
+- [ ] Página Mis Datos
+- [ ] Configuración privacidad
+- [ ] Opt-out emails
+
+### Infrastructure
+- [x] Servidor EU (eu-west-1)
+- [x] Base de datos EU
+- [x] Secrets Manager EU
+
+## INFRASTRUCTURE
+
+- [ ] Git remote GitHub
+- [ ] CI/CD pipeline
+- [ ] Testing automatizado
 
 ## TECHNICAL DEBT
 
-- [ ] Fix LF to CRLF warnings
-- [ ] Migrate frontend to React
-- [ ] Add comprehensive test coverage
-- [ ] Performance optimization
+- [ ] Fix LF/CRLF
+- [ ] Testing completo
+- [ ] Performance
 - [ ] Security hardening

@@ -6,8 +6,8 @@ class Settings(BaseSettings):
     DATABASE_SECRET_ARN: str = "prod/translatecloud/db"
     AWS_REGION: str = "eu-west-1"
     
-    COGNITO_USER_POOL_ID: Optional[str] = None
-    COGNITO_CLIENT_ID: Optional[str] = None
+    COGNITO_USER_POOL_ID: str = "eu-west-1_FH51nx4II"
+    COGNITO_CLIENT_ID: str = "6he757k99vkr15llk139usiub6"
     COGNITO_REGION: str = "eu-west-1"
     
     STRIPE_SECRET_KEY: Optional[str] = None
