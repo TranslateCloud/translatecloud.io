@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+    <title>Panel | TranslateCloud</title>
+    <meta name="description" content="Panel de TranslateCloud. Gestiona tus proyectos de traducción y tu cuenta.">
+    <meta name="robots" content="noindex, nofollow">
+
+    <link rel="alternate" hreflang="en" href="https://translatecloud.com/en/dashboard.html" />
+    <link rel="alternate" hreflang="es" href="https://translatecloud.com/es/panel.html" />
+    <link rel="canonical" href="https://translatecloud.com/es/panel.html">
+
+    <link rel="icon" type="image/svg+xml" href="/assets/images/favicon.svg">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+        :root {
+            --color-primary: #111827;
+            --color-accent: #0EA5E9;
+            --color-accent-hover: #0284C7;
+            --color-white: #FFFFFF;
+            --color-gray-50: #F9FAFB;
+            --color-gray-100: #F3F4F6;
+            --color-gray-200: #E5E7EB;
+            --color-gray-300: #D1D5DB;
+            --color-gray-400: #9CA3AF;
+            --color-gray-500: #6B7280;
+            --color-gray-600: #4B5563;
+            --color-gray-700: #374151;
+            --color-gray-800: #1F2937;
+            --color-gray-900: #111827;
+            --color-success: #10B981;
+            --color-warning: #F59E0B;
+            --color-error: #EF4444;
+            --font-sans: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            --font-light: 300;
+            --font-normal: 400;
+            --font-medium: 500;
+            --font-semibold: 600;
+            --text-xs: 0.75rem;
+            --text-sm: 0.875rem;
+            --text-base: 1rem;
+            --text-lg: 1.125rem;
+            --text-xl: 1.25rem;
+            --text-2xl: 1.5rem;
+            --text-3xl: 1.875rem;
+            --space-1: 0.25rem;
+            --space-2: 0.5rem;
+            --space-3: 0.75rem;
+            --space-4: 1rem;
+            --space-6: 1.5rem;
+            --space-8: 2rem;
+            --space-10: 2.5rem;
+            --space-12: 3rem;
+            --space-16: 4rem;
+            --space-20: 5rem;
+            --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.08);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.08);
+            --radius-sm: 0.25rem;
+            --radius-md: 0.375rem;
+            --radius-lg: 0.5rem;
+            --radius-xl: 0.75rem;
+            --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        body {
+            font-family: var(--font-sans);
+            color: var(--color-gray-900);
+            background-color: var(--color-gray-50);
+            line-height: 1.6;
+            font-size: var(--text-base);
+            font-weight: var(--font-normal);
+        }
+
+        .dashboard {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 260px;
+            background-color: var(--color-white);
+            border-right: 1px solid var(--color-gray-200);
+            padding: var(--space-6);
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            overflow-y: auto;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: var(--space-3);
+            font-size: var(--text-xl);
+            font-weight: var(--font-medium);
+            color: var(--color-gray-900);
+            text-decoration: none;
+            margin-bottom: var(--space-8);
+            letter-spacing: -0.01em;
+        }
+
+        .logo-icon {
+            width: 28px;
+            height: 28px;
+        }
+
+        .nav {
+            flex: 1;
+        }
+
+        .nav-section {
+            margin-bottom: var(--space-6);
+        }
+
+        .nav-label {
+            font-size: var(--text-xs);
+            font-weight: var(--font-semibold);
+            color: var(--color-gray-500);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: var(--space-3);
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: var(--space-3);
+            padding: var(--space-2) var(--space-3);
+            border-radius: var(--radius-md);
+            color: var(--color-gray-700);
+            text-decoration: none;
+            font-size: var(--text-sm);
+            font-weight: var(--font-normal);
+            transition: all var(--transition-fast);
+            margin-bottom: var(--space-1);
+        }
+
+        .nav-link:hover {
+            background-color: var(--color-gray-100);
+            color: var(--color-gray-900);
+        }
+
+        .nav-link.active {
+            background-color: var(--color-gray-900);
+            color: var(--color-white);
+        }
+
+        .nav-icon {
+            width: 18px;
+            height: 18px;
+        }
+
+        .user-profile {
+            padding-top: var(--space-6);
+            border-top: 1px solid var(--color-gray-200);
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: var(--space-3);
+            margin-bottom: var(--space-4);
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: var(--color-accent);
+            color: var(--color-white);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: var(--font-semibold);
+            font-size: var(--text-sm);
+        }
+
+        .user-details {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .user-name {
+            font-size: var(--text-sm);
+            font-weight: var(--font-medium);
+            color: var(--color-gray-900);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .user-email {
+            font-size: var(--text-xs);
+            color: var(--color-gray-500);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .btn-logout {
+            width: 100%;
+            padding: var(--space-2) var(--space-3);
+            background-color: var(--color-white);
+            border: 1px solid var(--color-gray-300);
+            border-radius: var(--radius-md);
+            font-size: var(--text-sm);
+            font-weight: var(--font-medium);
+            color: var(--color-gray-700);
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            font-family: var(--font-sans);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--space-2);
+        }
+
+        .btn-logout:hover {
+            background-color: var(--color-gray-50);
+            border-color: var(--color-gray-400);
+        }
+
+        .main-content {
+            margin-left: 260px;
+            flex: 1;
+            padding: var(--space-8);
+        }
+
+        .header {
+            margin-bottom: var(--space-8);
+        }
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: var(--space-4);
+        }
+
+        .page-title {
+            font-size: var(--text-3xl);
+            font-weight: var(--font-light);
+            color: var(--color-gray-900);
+            margin-bottom: var(--space-2);
+            letter-spacing: -0.01em;
+        }
+
+        .page-subtitle {
+            font-size: var(--text-base);
+            color: var(--color-gray-600);
+        }
+
+        .btn-primary {
+            padding: var(--space-2) var(--space-4);
+            background-color: var(--color-gray-900);
+            color: var(--color-white);
+            border: none;
+            border-radius: var(--radius-md);
+            font-size: var(--text-sm);
+            font-weight: var(--font-medium);
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            font-family: var(--font-sans);
+            display: inline-flex;
+            align-items: center;
+            gap: var(--space-2);
+            text-decoration: none;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--color-gray-800);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: var(--space-6);
+            margin-bottom: var(--space-8);
+        }
+
+        .stat-card {
+            background-color: var(--color-white);
+            border: 1px solid var(--color-gray-200);
+            border-radius: var(--radius-lg);
+            padding: var(--space-6);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .stat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: var(--space-4);
+        }
+
+        .stat-label {
+            font-size: var(--text-sm);
+            color: var(--color-gray-600);
+            font-weight: var(--font-normal);
+        }
+
+        .stat-icon {
+            width: 20px;
+            height: 20px;
+            color: var(--color-gray-400);
+        }
+
+        .stat-value {
+            font-size: var(--text-3xl);
+            font-weight: var(--font-light);
+            color: var(--color-gray-900);
+            margin-bottom: var(--space-1);
+        }
+
+        .stat-change {
+            font-size: var(--text-xs);
+            color: var(--color-gray-500);
+        }
+
+        .section {
+            background-color: var(--color-white);
+            border: 1px solid var(--color-gray-200);
+            border-radius: var(--radius-lg);
+            padding: var(--space-6);
+            box-shadow: var(--shadow-sm);
+            margin-bottom: var(--space-6);
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--space-6);
+            padding-bottom: var(--space-4);
+            border-bottom: 1px solid var(--color-gray-200);
+        }
+
+        .section-title {
+            font-size: var(--text-xl);
+            font-weight: var(--font-medium);
+            color: var(--color-gray-900);
+        }
+
+        .section-link {
+            font-size: var(--text-sm);
+            color: var(--color-accent);
+            text-decoration: none;
+            font-weight: var(--font-medium);
+            transition: color var(--transition-fast);
+        }
+
+        .section-link:hover {
+            color: var(--color-accent-hover);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: var(--space-12) var(--space-6);
+        }
+
+        .empty-icon {
+            width: 48px;
+            height: 48px;
+            color: var(--color-gray-300);
+            margin: 0 auto var(--space-4);
+        }
+
+        .empty-title {
+            font-size: var(--text-lg);
+            font-weight: var(--font-medium);
+            color: var(--color-gray-900);
+            margin-bottom: var(--space-2);
+        }
+
+        .empty-text {
+            font-size: var(--text-sm);
+            color: var(--color-gray-600);
+            margin-bottom: var(--space-6);
+        }
+
+        @media (max-width: 1024px) {
+            .sidebar {
+                transform: translateX(-100%);
+                transition: transform 0.3s;
+                z-index: 1000;
+            }
+
+            .sidebar.open {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .main-content {
+                padding: var(--space-4);
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .header-top {
+                flex-direction: column;
+                gap: var(--space-4);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="dashboard">
+        <aside class="sidebar" id="sidebar">
+            <a href="/es/" class="logo">
+                <i data-lucide="globe" class="logo-icon"></i>
+                TranslateCloud
+            </a>
+
+            <nav class="nav">
+                <div class="nav-section">
+                    <div class="nav-label">Principal</div>
+                    <a href="/es/panel.html" class="nav-link active">
+                        <i data-lucide="layout-dashboard" class="nav-icon"></i>
+                        Panel
+                    </a>
+                    <a href="/es/proyectos.html" class="nav-link">
+                        <i data-lucide="folder" class="nav-icon"></i>
+                        Proyectos
+                    </a>
+                    <a href="/es/traducciones.html" class="nav-link">
+                        <i data-lucide="languages" class="nav-icon"></i>
+                        Traducciones
+                    </a>
+                </div>
+
+                <div class="nav-section">
+                    <div class="nav-label">Cuenta</div>
+                    <a href="/es/facturacion.html" class="nav-link">
+                        <i data-lucide="credit-card" class="nav-icon"></i>
+                        Facturación
+                    </a>
+                    <a href="/es/configuracion.html" class="nav-link">
+                        <i data-lucide="settings" class="nav-icon"></i>
+                        Configuración
+                    </a>
+                </div>
+
+                <div class="nav-section">
+                    <div class="nav-label">Soporte</div>
+                    <a href="/es/documentacion.html" class="nav-link">
+                        <i data-lucide="book-open" class="nav-icon"></i>
+                        Documentación
+                    </a>
+                    <a href="/es/soporte.html" class="nav-link">
+                        <i data-lucide="help-circle" class="nav-icon"></i>
+                        Ayuda y Soporte
+                    </a>
+                </div>
+            </nav>
+
+            <div class="user-profile">
+                <div class="user-info">
+                    <div class="user-avatar" id="user-avatar"></div>
+                    <div class="user-details">
+                        <div class="user-name" id="user-name">Cargando...</div>
+                        <div class="user-email" id="user-email"></div>
+                    </div>
+                </div>
+                <button class="btn-logout" id="btn-logout">
+                    <i data-lucide="log-out" style="width: 16px; height: 16px;"></i>
+                    Cerrar Sesión
+                </button>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <div class="header">
+                <div class="header-top">
+                    <div>
+                        <h1 class="page-title">Panel</h1>
+                        <p class="page-subtitle">¡Bienvenido de nuevo! Aquí está el resumen de tu cuenta.</p>
+                    </div>
+                    <a href="/es/nuevo-proyecto.html" class="btn-primary">
+                        <i data-lucide="plus" style="width: 16px; height: 16px;"></i>
+                        Nuevo Proyecto
+                    </a>
+                </div>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <span class="stat-label">Total de Proyectos</span>
+                        <i data-lucide="folder" class="stat-icon"></i>
+                    </div>
+                    <div class="stat-value" id="stat-projects">0</div>
+                    <div class="stat-change">Total histórico</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <span class="stat-label">Traducciones</span>
+                        <i data-lucide="languages" class="stat-icon"></i>
+                    </div>
+                    <div class="stat-value" id="stat-translations">0</div>
+                    <div class="stat-change">Completadas</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <span class="stat-label">Palabras Traducidas</span>
+                        <i data-lucide="type" class="stat-icon"></i>
+                    </div>
+                    <div class="stat-value" id="stat-words">0</div>
+                    <div class="stat-change">Total histórico</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <span class="stat-label">Estado de Cuenta</span>
+                        <i data-lucide="shield-check" class="stat-icon"></i>
+                    </div>
+                    <div class="stat-value" style="font-size: var(--text-xl);" id="stat-plan">Gratuito</div>
+                    <div class="stat-change">
+                        <a href="/es/facturacion.html" style="color: var(--color-accent); text-decoration: none;">Mejorar</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-header">
+                    <h2 class="section-title">Proyectos Recientes</h2>
+                    <a href="/es/proyectos.html" class="section-link">Ver todos</a>
+                </div>
+
+                <div class="empty-state">
+                    <i data-lucide="folder-open" class="empty-icon"></i>
+                    <h3 class="empty-title">Aún no tienes proyectos</h3>
+                    <p class="empty-text">Crea tu primer proyecto de traducción para comenzar.</p>
+                    <a href="/es/nuevo-proyecto.html" class="btn-primary">Crear Proyecto</a>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-header">
+                    <h2 class="section-title">Actividad Reciente</h2>
+                </div>
+
+                <div class="empty-state">
+                    <i data-lucide="activity" class="empty-icon"></i>
+                    <h3 class="empty-title">Sin actividad reciente</h3>
+                    <p class="empty-text">Tu actividad de traducción aparecerá aquí.</p>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="../assets/js/cookies.js"></script>
+    <script src="../assets/js/api.js"></script>
+    <script src="../assets/js/auth.js"></script>
+
+    <script>
+        lucide.createIcons();
+
+        Auth.requireAuth('/es/panel.html');
+
+        const user = Auth.getUser();
+
+        if (user) {
+            const userName = user.full_name || user.email.split('@')[0];
+            const userEmail = user.email;
+            const userInitials = userName.substring(0, 2).toUpperCase();
+
+            document.getElementById('user-name').textContent = userName;
+            document.getElementById('user-email').textContent = userEmail;
+            document.getElementById('user-avatar').textContent = userInitials;
+        } else {
+            API.users.getCurrentUser()
+                .then(userData => {
+                    Auth.setUser(userData);
+                    const userName = userData.full_name || userData.email.split('@')[0];
+                    const userEmail = userData.email;
+                    const userInitials = userName.substring(0, 2).toUpperCase();
+
+                    document.getElementById('user-name').textContent = userName;
+                    document.getElementById('user-email').textContent = userEmail;
+                    document.getElementById('user-avatar').textContent = userInitials;
+                })
+                .catch(error => {
+                    console.error('[Panel] Failed to load user:', error);
+                });
+        }
+
+        document.getElementById('btn-logout').addEventListener('click', () => {
+            Auth.logout();
+        });
+    </script>
+</body>
+</html>
