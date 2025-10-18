@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout | TranslateCloud</title>
+    <link rel="icon" type="image/svg+xml" href="/assets/images/favicon.svg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <script src="https://js.stripe.com/v3/"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+        :root {
+            --color-primary: #111827;
+            --color-accent: #0EA5E9;
+            --color-white: #FFFFFF;
+            --color-gray-50: #F9FAFB;
+            --color-gray-200: #E5E7EB;
+            --color-gray-600: #4B5563;
+            --color-gray-900: #111827;
+            --font-sans: 'IBM Plex Sans', sans-serif;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: var(--font-sans);
+            background-color: var(--color-gray-50);
+            color: var(--color-gray-900);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        .checkout-container {
+            background: var(--color-white);
+            padding: 3rem;
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            text-align: center;
+            max-width: 500px;
+            width: 90%;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--color-gray-900);
+            margin-bottom: 2rem;
+        }
+
+        .checkout-title {
+            font-size: 1.5rem;
+            font-weight: 500;
+            margin-bottom: 1rem;
+        }
+
+        .plan-details {
+            background: var(--color-gray-50);
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .plan-name {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .plan-price {
+            font-size: 2rem;
+            color: var(--color-accent);
+            margin-bottom: 0.5rem;
+        }
+
+        .plan-billing {
+            color: var(--color-gray-600);
+            font-size: 0.875rem;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 0.75rem 1.5rem;
+            background: var(--color-accent);
+            color: var(--color-white);
+            border: none;
+            border-radius: 0.375rem;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn:hover {
+            background: #0284C7;
+        }
+
+        .btn:disabled {
+            background: var(--color-gray-200);
+            cursor: not-allowed;
+        }
+
+        .loading {
+            margin-top: 1rem;
+            color: var(--color-gray-600);
+        }
+
+        .error {
+            background: #FEE2E2;
+            color: #991B1B;
+            padding: 1rem;
+            border-radius: 0.375rem;
+            margin-top: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="checkout-container">
+        <div class="logo">TranslateCloud</div>
+        <h1 class="checkout-title">Complete Your Subscription</h1>
+
+        <div class="plan-details" id="plan-details">
+            <div class="plan-name" id="plan-name">Loading...</div>
+            <div class="plan-price" id="plan-price">¬0</div>
+            <div class="plan-billing" id="plan-billing">Loading...</div>
+        </div>
+
+        <button class="btn" id="checkout-btn" onclick="redirectToStripe()">
+            Proceed to Payment
+        </button>
+
+        <div class="loading hidden" id="loading">
+            <p>Redirecting to secure payment...</p>
+        </div>
+
+        <div class="error hidden" id="error"></div>
+    </div>
+
+    <script src="../assets/js/cookies.js"></script>
+    <script src="../assets/js/api.js"></script>
+    <script src="../assets/js/auth.js"></script>
+    <script src="../assets/js/dark-mode.js"></script>
+
+    <script>
+        lucide.createIcons();
+
+        // Get plan from URL params
+        const urlParams = new URLSearchParams(window.location.search);
+        const plan = urlParams.get('plan');
+        const billing = urlParams.get('billing') || 'monthly';
+
+        // Plan prices
+        const plans = {
+            payg: {
+                name: 'Pay-As-You-Go',
+                price: '¬0.055/word',
+                billing: 'No monthly fee',
+                stripe_price_id: null  // Pay-as-you-go doesn't need subscription
+            },
+            professional: {
+                name: 'Professional',
+                monthly: { price: '¬699', stripe_price_id: 'price_professional_monthly' },
+                annual: { price: '¬594', stripe_price_id: 'price_professional_annual' }
+            },
+            business: {
+                name: 'Business',
+                monthly: { price: '¬1,799', stripe_price_id: 'price_business_monthly' },
+                annual: { price: '¬1,529', stripe_price_id: 'price_business_annual' }
+            },
+            enterprise: {
+                name: 'Enterprise',
+                monthly: { price: '¬4,999', stripe_price_id: 'price_enterprise_monthly' },
+                annual: { price: '¬4,249', stripe_price_id: 'price_enterprise_annual' }
+            }
+        };
+
+        // Display plan details
+        function displayPlanDetails() {
+            const planData = plans[plan];
+
+            if (!planData) {
+                showError('Invalid plan selected');
+                return;
+            }
+
+            if (plan === 'payg') {
+                document.getElementById('plan-name').textContent = planData.name;
+                document.getElementById('plan-price').textContent = planData.price;
+                document.getElementById('plan-billing').textContent = planData.billing;
+                document.getElementById('checkout-btn').textContent = 'Continue to Dashboard';
+            } else {
+                const billingData = billing === 'annual' ? planData.annual : planData.monthly;
+                document.getElementById('plan-name').textContent = planData.name;
+                document.getElementById('plan-price').textContent = billingData.price;
+                document.getElementById('plan-billing').textContent = `Billed ${billing}`;
+            }
+        }
+
+        async function redirectToStripe() {
+            if (!Auth.isAuthenticated()) {
+                window.location.href = `/en/signup.html?plan=${plan}&billing=${billing}`;
+                return;
+            }
+
+            if (plan === 'payg') {
+                // No subscription needed for pay-as-you-go
+                window.location.href = '/en/dashboard.html';
+                return;
+            }
+
+            const planData = plans[plan];
+            const billingData = billing === 'annual' ? planData.annual : planData.monthly;
+
+            if (!billingData || !billingData.stripe_price_id) {
+                showError('Invalid plan configuration');
+                return;
+            }
+
+            try {
+                document.getElementById('checkout-btn').disabled = true;
+                document.getElementById('loading').classList.remove('hidden');
+
+                // Call backend to create Stripe checkout session
+                const response = await API.post('/api/payments/create-checkout-session', {
+                    price_id: billingData.stripe_price_id,
+                    plan: plan,
+                    billing_period: billing
+                });
+
+                if (response.checkout_url) {
+                    window.location.href = response.checkout_url;
+                } else {
+                    showError('Failed to create checkout session');
+                }
+
+            } catch (error) {
+                console.error('Checkout error:', error);
+                showError(error.message || 'Failed to start checkout process');
+                document.getElementById('checkout-btn').disabled = false;
+                document.getElementById('loading').classList.add('hidden');
+            }
+        }
+
+        function showError(message) {
+            const errorEl = document.getElementById('error');
+            errorEl.textContent = message;
+            errorEl.classList.remove('hidden');
+        }
+
+        // Initialize
+        displayPlanDetails();
+    </script>
+</body>
+</html>

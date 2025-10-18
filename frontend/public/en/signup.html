@@ -422,8 +422,20 @@
                 };
 
                 const response = await Auth.signup(userData);
-                showAlert('success', 'Account created!', 'Redirecting to your dashboard...');
-                setTimeout(() => window.location.href = '/en/dashboard.html', 1500);
+                showAlert('success', 'Account created!', 'Redirecting...');
+
+                // Check if user came from pricing page with plan
+                const urlParams = new URLSearchParams(window.location.search);
+                const plan = urlParams.get('plan');
+                const billing = urlParams.get('billing');
+
+                if (plan && plan !== 'payg') {
+                    // Redirect to checkout for paid plans
+                    setTimeout(() => window.location.href = `/en/checkout.html?plan=${plan}&billing=${billing || 'monthly'}`, 1500);
+                } else {
+                    // Redirect to dashboard
+                    setTimeout(() => window.location.href = '/en/dashboard.html', 1500);
+                }
             } catch (error) {
                 console.error('[Signup] Error:', error);
                 let errorMessage = error.message || 'Unable to create account. Please try again.';

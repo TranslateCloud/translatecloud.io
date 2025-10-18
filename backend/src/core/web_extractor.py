@@ -117,5 +117,67 @@ class WebExtractor:
         return '/' + '/'.join(components)
 
 
+async def crawl_website(base_url: str, max_pages: int = 50) -> Dict:
+    """
+    Crawl website starting from base_url
+
+    Args:
+        base_url: Starting URL
+        max_pages: Maximum pages to crawl
+
+    Returns:
+        Dict with pages_count, word_count, and pages list
+    """
+    visited = set()
+    to_visit = [base_url]
+    pages_data = []
+    total_words = 0
+
+    base_domain = urlparse(base_url).netloc
+
+    while to_visit and len(visited) < max_pages:
+        url = to_visit.pop(0)
+
+        if url in visited:
+            continue
+
+        # Only crawl same domain
+        if urlparse(url).netloc != base_domain:
+            continue
+
+        visited.add(url)
+
+        # Crawl page
+        page_data = extractor.crawl_page(url)
+
+        if page_data:
+            pages_data.append({
+                'url': url,
+                'title': page_data['title'],
+                'word_count': page_data['word_count']
+            })
+            total_words += page_data['word_count']
+
+            # Extract links for further crawling
+            if len(visited) < max_pages:
+                soup = BeautifulSoup(page_data['html_original'], 'lxml')
+                for link in soup.find_all('a', href=True):
+                    next_url = urljoin(url, link['href'])
+
+                    # Filter: same domain, http/https only
+                    parsed = urlparse(next_url)
+                    if (parsed.netloc == base_domain and
+                        parsed.scheme in ['http', 'https'] and
+                        next_url not in visited and
+                        next_url not in to_visit):
+                        to_visit.append(next_url)
+
+    return {
+        'pages_count': len(pages_data),
+        'word_count': total_words,
+        'pages': pages_data
+    }
+
+
 # Instancia global
 extractor = WebExtractor()

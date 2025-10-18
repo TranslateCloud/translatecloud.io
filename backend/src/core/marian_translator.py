@@ -137,5 +137,21 @@ class MarianTranslator:
         return results
 
 
+def translate_content(text: str, source_lang: str, target_lang: str) -> str:
+    """
+    Simple wrapper for translation
+
+    Args:
+        text: Text to translate
+        source_lang: Source language code
+        target_lang: Target language code
+
+    Returns:
+        Translated text
+    """
+    result = translator.translate(text, source_lang, target_lang)
+    return result if result else text  # Return original if translation fails
+
+
 # Instancia global del traductor
 translator = MarianTranslator()

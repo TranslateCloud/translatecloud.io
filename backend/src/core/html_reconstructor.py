@@ -171,5 +171,67 @@ class HTMLReconstructor:
         return '\n'.join(sitemap)
 
 
+def rebuild_website(pages_data: List[Dict], target_lang: str, output_path: str) -> str:
+    """
+    Rebuild entire website with translations and create ZIP
+
+    Args:
+        pages_data: List of pages with original HTML and translated content
+        target_lang: Target language code
+        output_path: Path to save ZIP file
+
+    Returns:
+        Path to generated ZIP file
+    """
+    import zipfile
+    import os
+    from pathlib import Path
+
+    # Create temp directory for translated files
+    temp_dir = Path(output_path).parent / 'temp_translated'
+    temp_dir.mkdir(exist_ok=True)
+
+    try:
+        # Process each page
+        for page in pages_data:
+            # Reconstruct HTML
+            translated_html = reconstructor.reconstruct_page(
+                page['original_html'],
+                page['translated_elements'],
+                target_lang
+            )
+
+            # Save to temp directory
+            # Extract path from URL
+            url_path = page.get('url_path', 'index.html')
+            file_path = temp_dir / url_path
+
+            file_path.parent.mkdir(parents=True, exist_ok=True)
+            file_path.write_text(translated_html, encoding='utf-8')
+
+        # Create ZIP file
+        zip_path = f"{output_path}.zip"
+        with zipfile.ZipFile(zip_path, 'w', zipfile.ZIP_DEFLATED) as zipf:
+            for root, dirs, files in os.walk(temp_dir):
+                for file in files:
+                    file_path = os.path.join(root, file)
+                    arcname = os.path.relpath(file_path, temp_dir)
+                    zipf.write(file_path, arcname)
+
+        # Cleanup temp directory
+        import shutil
+        shutil.rmtree(temp_dir)
+
+        return zip_path
+
+    except Exception as e:
+        logger.error(f'Error rebuilding website: {str(e)}')
+        # Cleanup on error
+        if temp_dir.exists():
+            import shutil
+            shutil.rmtree(temp_dir)
+        raise
+
+
 # Instancia global
 reconstructor = HTMLReconstructor()
