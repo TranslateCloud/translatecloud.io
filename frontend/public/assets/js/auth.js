@@ -141,7 +141,7 @@ const Auth = (() => {
    */
   const login = async (email, password) => {
     try {
-      const response = await fetch(`${CONFIG.API_BASE_URL}/api/users/login`, {
+      const response = await fetch(`${CONFIG.API_BASE_URL}/api/auth/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -174,7 +174,7 @@ const Auth = (() => {
    */
   const signup = async (userData) => {
     try {
-      const response = await fetch(`${CONFIG.API_BASE_URL}/api/users/signup`, {
+      const response = await fetch(`${CONFIG.API_BASE_URL}/api/auth/signup`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
