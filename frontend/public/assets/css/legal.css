@@ -1,0 +1,48 @@
+:root{--color-primary:#111827;--color-accent:#0EA5E9;--color-gray-50:#F9FAFB;--color-gray-700:#374151;--color-gray-900:#111827;--space-4:1rem;--space-6:1.5rem;--space-8:2rem;--space-12:3rem;--font-sans:'IBM Plex Sans',sans-serif;--text-sm:0.875rem;--text-lg:1.125rem;--text-2xl:1.5rem;--text-3xl:1.875rem}
+.legal-page{font-family:var(--font-sans);color:var(--color-gray-700);background:var(--color-gray-50);line-height:1.625;min-height:100vh}
+.legal-header{background:var(--color-primary);padding:var(--space-8) 0;margin-bottom:var(--space-12)}
+.legal-container{max-width:800px;margin:0 auto;padding:0 var(--space-6)}
+.legal-nav{display:flex;justify-content:space-between;align-items:center;margin-bottom:var(--space-4)}
+.legal-logo{color:white;font-size:var(--text-lg);text-decoration:none;display:flex;align-items:center;gap:0.5rem}
+.legal-lang-switch{background:transparent;border:1px solid rgba(255,255,255,0.3);color:white;padding:0.5rem 1rem;border-radius:0.5rem;cursor:pointer;font-size:var(--text-sm);transition:all 150ms;text-decoration:none}
+.legal-lang-switch:hover{background:rgba(255,255,255,0.1)}
+.legal-title{color:white;font-size:var(--text-3xl);font-weight:600;margin:0}
+.legal-updated{color:rgba(255,255,255,0.7);font-size:var(--text-sm);margin-top:var(--space-4)}
+.legal-content{background:white;border-radius:0.5rem;padding:var(--space-8);margin-bottom:var(--space-12);box-shadow:0 1px 3px 0 rgba(0,0,0,0.08)}
+.legal-content h2{color:var(--color-gray-900);font-size:var(--text-2xl);font-weight:600;margin:var(--space-8) 0 var(--space-4) 0}
+.legal-content h2:first-child{margin-top:0}
+.legal-content h3{color:var(--color-gray-900);font-size:var(--text-lg);font-weight:500;margin:var(--space-6) 0 var(--space-4) 0}
+.legal-content p{margin-bottom:var(--space-4)}
+.legal-content ul,.legal-content ol{margin:var(--space-4) 0;padding-left:var(--space-6)}
+.legal-content li{margin-bottom:var(--space-4)}
+.legal-content a{color:var(--color-accent);text-decoration:none}
+.legal-content a:hover{text-decoration:underline}
+.legal-content strong{font-weight:600;color:var(--color-gray-900)}
+.legal-toc{background:var(--color-gray-50);border-left:3px solid var(--color-accent);padding:var(--space-6);margin:var(--space-8) 0;border-radius:0.5rem}
+.legal-toc h3{font-size:var(--text-lg);font-weight:600;margin:0 0 var(--space-4) 0}
+.legal-toc ul{list-style:none;padding:0;margin:0}
+.legal-toc li{margin-bottom:0.5rem}
+.legal-toc a{color:var(--color-gray-700);font-size:var(--text-sm)}
+.legal-toc a:hover{color:var(--color-accent)}
+.legal-footer{background:var(--color-primary);color:rgba(255,255,255,0.7);padding:var(--space-8) 0;margin-top:var(--space-12)}
+.legal-footer-links{display:flex;flex-wrap:wrap;gap:var(--space-6);justify-content:center;margin-bottom:var(--space-4)}
+.legal-footer-links a{color:rgba(255,255,255,0.7);text-decoration:none;font-size:var(--text-sm)}
+.legal-footer-links a:hover{color:white}
+.legal-footer-copy{text-align:center;font-size:var(--text-sm)}
+.cookie-banner{position:fixed;bottom:0;left:0;right:0;background:var(--color-primary);color:white;padding:var(--space-6);box-shadow:0 -4px 6px rgba(0,0,0,0.1);z-index:9999;display:none}
+.cookie-banner.show{display:block;animation:slideUp 300ms}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.cookie-banner-content{max-width:1280px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;gap:var(--space-6)}
+.cookie-banner-text{flex:1;font-size:var(--text-sm)}
+.cookie-banner-text a{color:var(--color-accent);text-decoration:underline}
+.cookie-banner-actions{display:flex;gap:var(--space-4)}
+.cookie-btn{padding:0.625rem 1.25rem;border-radius:0.5rem;font-size:var(--text-sm);font-weight:500;cursor:pointer;border:none;transition:all 150ms}
+.cookie-btn-accept{background:var(--color-accent);color:white}
+.cookie-btn-accept:hover{background:#0284C7}
+.cookie-btn-decline{background:transparent;color:white;border:1px solid rgba(255,255,255,0.3)}
+.cookie-btn-decline:hover{background:rgba(255,255,255,0.1)}
+@media (max-width:768px){
+.legal-content{padding:var(--space-6)}
+.cookie-banner-content{flex-direction:column}
+.cookie-btn{flex:1}
+}
