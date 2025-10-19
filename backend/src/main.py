@@ -20,23 +20,16 @@ def get_translation_service():
     global translation_service
     if translation_service is None:
         from src.core.translation_service import TranslationService
-        from src.config.database import db
 
-        # Try AWS Secrets Manager first, then fall back to settings
-        deepl_key = None
-        try:
-            deepl_key = db.get_deepl_api_key()
-            if deepl_key:
-                logger.info("Using DeepL API key from AWS Secrets Manager")
-        except Exception as e:
-            logger.warning(f"Could not retrieve DeepL key from Secrets Manager: {e}")
-
-        if not deepl_key:
-            deepl_key = settings.DEEPL_API_KEY
-            logger.info("Using DeepL API key from environment settings")
+        # Use DeepL API key from environment variable (Lambda env or .env file)
+        deepl_key = settings.DEEPL_API_KEY
+        if deepl_key:
+            logger.info(f"DeepL API key configured: {deepl_key[:8]}...")
+        else:
+            logger.warning("DeepL API key not configured - translation service will use fallback only")
 
         translation_service = TranslationService(deepl_api_key=deepl_key)
-        logger.info("Translation service initialized")
+        logger.info("Translation service initialized successfully")
 
     return translation_service
 
