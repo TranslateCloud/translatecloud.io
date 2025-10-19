@@ -16,6 +16,5 @@ bcrypt==4.1.2
 # Translation services
 deepl==1.17.0
 
-# Web scraping
+# Web scraping (using html.parser instead of lxml to avoid compilation issues on Windows)
 beautifulsoup4==4.12.3
-lxml==5.1.0

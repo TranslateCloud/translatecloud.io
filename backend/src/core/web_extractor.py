@@ -37,7 +37,7 @@ class WebExtractor:
             response = self.session.get(url, timeout=30)
             response.raise_for_status()
             
-            soup = BeautifulSoup(response.content, 'lxml')
+            soup = BeautifulSoup(response.content, 'html.parser')
             
             # Extraer metadatos
             title = soup.find('title')
@@ -160,7 +160,7 @@ async def crawl_website(base_url: str, max_pages: int = 50) -> Dict:
 
             # Extract links for further crawling
             if len(visited) < max_pages:
-                soup = BeautifulSoup(page_data['html_original'], 'lxml')
+                soup = BeautifulSoup(page_data['html_original'], 'html.parser')
                 for link in soup.find_all('a', href=True):
                     next_url = urljoin(url, link['href'])
 

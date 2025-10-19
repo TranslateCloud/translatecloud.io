@@ -6,9 +6,17 @@ Manages DeepL (primary) and MarianMT (fallback) translators
 import logging
 from typing import Optional, Dict, Any
 from src.core.deepl_translator import DeepLTranslator
-from src.core.marian_translator import MarianTranslator
 
 logger = logging.getLogger(__name__)
+
+# Try to import MarianMT (optional, requires PyTorch)
+try:
+    from src.core.marian_translator import MarianTranslator
+    MARIAN_AVAILABLE = True
+except ImportError:
+    logger.warning("MarianMT not available (PyTorch not installed). Only DeepL will be used.")
+    MarianTranslator = None
+    MARIAN_AVAILABLE = False
 
 
 class TranslationService:
@@ -42,16 +50,20 @@ class TranslationService:
                 logger.warning(f"DeepL initialization failed: {e}")
                 self.deepl = None
 
-        # Initialize MarianMT as fallback
-        try:
-            self.marian = MarianTranslator()
-            logger.info("MarianMT translator enabled (fallback)")
-        except Exception as e:
-            logger.error(f"MarianMT initialization failed: {e}")
-            self.marian = None
+        # Initialize MarianMT as fallback (if available)
+        self.marian = None
+        if MARIAN_AVAILABLE and MarianTranslator:
+            try:
+                self.marian = MarianTranslator()
+                logger.info("MarianMT translator enabled (fallback)")
+            except Exception as e:
+                logger.error(f"MarianMT initialization failed: {e}")
+                self.marian = None
+        else:
+            logger.info("MarianMT not available - DeepL will be the only translator")
 
         if not self.deepl and not self.marian:
-            logger.critical("NO TRANSLATORS AVAILABLE - Service non-functional")
+            logger.warning("No translators available - DeepL API key required for functionality")
 
     async def translate(
         self,
