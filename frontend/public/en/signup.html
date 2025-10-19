@@ -153,6 +153,17 @@
         .lang-link:hover { color: var(--color-gray-900); background-color: var(--color-gray-100); }
         .lang-link.active { color: var(--color-gray-900); background-color: var(--color-gray-100); }
 
+        .footer {
+            background-color: var(--color-gray-900);
+            color: var(--color-gray-400);
+            padding: var(--space-12) var(--space-8);
+            text-align: center;
+        }
+
+        .footer-text {
+            font-size: var(--text-sm);
+        }
+
         @media (max-width: 1024px) { .signup-brand { display: none; } .signup-container { flex: none; width: 100%; } }
         @media (max-width: 640px) { .signup-container { padding: var(--space-6); } .signup-form { padding: var(--space-6); } .form-row { grid-template-columns: 1fr; } }
     </style>
@@ -277,6 +288,10 @@
             </div>
         </div>
     </div>
+
+    <footer class="footer">
+        <p class="footer-text">© 2025 TranslateCloud. All rights reserved.</p>
+    </footer>
 
     <script src="../assets/js/cookies.js"></script>
     <script src="../assets/js/api.js"></script>

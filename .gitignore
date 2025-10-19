@@ -53,3 +53,10 @@ frontend/dist/
 # Local backups
 local-backups/
 
+
+# Lambda deployment packages
+backend/lambda-deploy/
+backend/*.zip
+backend/lambda-package/
+__pycache__/
+*.pyc

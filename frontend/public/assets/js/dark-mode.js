@@ -104,6 +104,155 @@ const DarkMode = (() => {
       color: #0F172A;
     }
 
+    /* Fix policy pages and content pages */
+    .dark-mode body {
+      background-color: #0F172A;
+      color: #E2E8F0;
+    }
+
+    .dark-mode h1,
+    .dark-mode h2,
+    .dark-mode h3,
+    .dark-mode h4,
+    .dark-mode h5,
+    .dark-mode h6 {
+      color: #FFFFFF;
+    }
+
+    .dark-mode p,
+    .dark-mode li,
+    .dark-mode td,
+    .dark-mode th,
+    .dark-mode span,
+    .dark-mode div {
+      color: #CBD5E1;
+    }
+
+    .dark-mode a {
+      color: #38BDF8;
+    }
+
+    .dark-mode a:hover {
+      color: #0EA5E9;
+    }
+
+    .dark-mode .content,
+    .dark-mode .content-container,
+    .dark-mode .main-content,
+    .dark-mode .policy-content,
+    .dark-mode article {
+      background-color: #1E293B;
+      color: #E2E8F0;
+    }
+
+    .dark-mode .header {
+      background-color: #1E293B;
+      border-bottom-color: #334155;
+    }
+
+    .dark-mode .footer {
+      background-color: #1E293B;
+      border-top-color: #334155;
+    }
+
+    .dark-mode strong,
+    .dark-mode b {
+      color: #F1F5F9;
+    }
+
+    .dark-mode table {
+      border-color: #475569;
+    }
+
+    .dark-mode thead {
+      background-color: #334155;
+    }
+
+    .dark-mode tbody tr {
+      border-bottom-color: #475569;
+    }
+
+    .dark-mode code,
+    .dark-mode pre {
+      background-color: #0F172A;
+      color: #38BDF8;
+      border-color: #475569;
+    }
+
+    /* CHECKOUT PAGE FIXES */
+    .dark-mode .checkout-container {
+      background-color: #0F172A !important;
+    }
+
+    .dark-mode .plan-details {
+      background-color: #1E293B !important;
+      border-color: #334155 !important;
+    }
+
+    .dark-mode .plan-name {
+      color: #FFFFFF !important;
+    }
+
+    .dark-mode .plan-price {
+      color: #38BDF8 !important;
+    }
+
+    .dark-mode .plan-billing {
+      color: #94A3B8 !important;
+    }
+
+    .dark-mode .loading {
+      color: #E2E8F0 !important;
+    }
+
+    /* ERROR/ALERT STATES - CRITICAL FIX */
+    .dark-mode .error,
+    .dark-mode .alert-error {
+      background-color: #7F1D1D !important;
+      border-color: #991B1B !important;
+      color: #FEE2E2 !important;
+    }
+
+    .dark-mode .alert-success {
+      background-color: #065F46 !important;
+      border-color: #059669 !important;
+      color: #D1FAE5 !important;
+    }
+
+    /* DISABLED STATES */
+    .dark-mode .btn:disabled,
+    .dark-mode button:disabled {
+      background-color: #475569 !important;
+      color: #94A3B8 !important;
+      cursor: not-allowed !important;
+    }
+
+    /* INPUTS AND FORMS */
+    .dark-mode input,
+    .dark-mode select,
+    .dark-mode textarea {
+      background-color: #0F172A !important;
+      border-color: #475569 !important;
+      color: #E2E8F0 !important;
+    }
+
+    .dark-mode input::placeholder,
+    .dark-mode textarea::placeholder {
+      color: #64748B !important;
+    }
+
+    .dark-mode label {
+      color: #E2E8F0 !important;
+    }
+
+    /* CARDS AND CONTAINERS */
+    .dark-mode .card,
+    .dark-mode .container,
+    .dark-mode .box {
+      background-color: #1E293B !important;
+      border-color: #334155 !important;
+    }
+
     * {
       transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
     }

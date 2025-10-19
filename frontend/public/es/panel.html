@@ -432,7 +432,18 @@
                 gap: var(--space-4);
             }
         }
-    </style>
+    
+        .footer {
+            background-color: var(--color-gray-900);
+            color: var(--color-gray-400);
+            padding: var(--space-12) var(--space-8);
+            text-align: center;
+        }
+
+        .footer-text {
+            font-size: var(--text-sm);
+        }
+</style>
 </head>
 
 <body>
@@ -623,5 +634,9 @@
             Auth.logout();
         });
     </script>
+
+    <footer class="footer">
+        <p class="footer-text">© 2025 TranslateCloud. Todos los derechos reservados.</p>
+    </footer>
 </body>
 </html>

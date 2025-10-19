@@ -507,7 +507,18 @@
                 padding: var(--space-6);
             }
         }
-    </style>
+    
+        .footer {
+            background-color: var(--color-gray-900);
+            color: var(--color-gray-400);
+            padding: var(--space-12) var(--space-8);
+            text-align: center;
+        }
+
+        .footer-text {
+            font-size: var(--text-sm);
+        }
+</style>
 </head>
 
 <body>
@@ -790,5 +801,9 @@
             showAlert('success', 'Signed out successfully', 'You have been signed out of your account.');
         }
     </script>
+
+    <footer class="footer">
+        <p class="footer-text">© 2025 TranslateCloud. All rights reserved.</p>
+    </footer>
 </body>
 </html>
