@@ -43,7 +43,8 @@ class Database:
                 user=creds['username'],
                 password=creds['password'],
                 cursor_factory=RealDictCursor,
-                connect_timeout=10  # 10 seconds timeout
+                connect_timeout=10,  # 10 seconds timeout
+                sslmode='require'  # RDS requires SSL
             )
             logger.info(f"Database connection established successfully to {creds['host']}")
             return self.conn
