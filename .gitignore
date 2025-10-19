@@ -43,11 +43,13 @@ scripts-backup/
 # Audits (mantener local)
 Audits/
 
-# Personal notes
+# Personal notes and session logs (may contain sensitive data)
 CLAUDE.md
+CLAUDE-CODE-SESSION*.md
 project-structure.txt
 powershell-history.csv
 DAY-*.md
+*-SESSION-LOG*.md
 
 # Frontend (agregar después)
 frontend/node_modules/
