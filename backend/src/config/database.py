@@ -30,9 +30,11 @@ class Database:
     def connect(self):
         if self.conn and not self.conn.closed:
             return self.conn
-        
+
         creds = self.get_secret()
-        
+
+        logger.info(f"Attempting database connection to {creds['host']}")
+
         try:
             self.conn = psycopg2.connect(
                 host=creds['host'],
@@ -40,12 +42,13 @@ class Database:
                 database=creds['database'],
                 user=creds['username'],
                 password=creds['password'],
-                cursor_factory=RealDictCursor
+                cursor_factory=RealDictCursor,
+                connect_timeout=10  # 10 seconds timeout
             )
-            logger.info("Database connection established")
+            logger.info(f"Database connection established successfully to {creds['host']}")
             return self.conn
         except Exception as e:
-            logger.error(f"Database connection error: {e}")
+            logger.error(f"Database connection FAILED to {creds['host']}: {type(e).__name__} - {e}")
             raise
     
     def close(self):
@@ -60,12 +63,15 @@ class Database:
 db = Database()
 
 def get_db():
+    cursor = None
     try:
         cursor = db.get_cursor()
         yield cursor
-        db.conn.commit()
+        if db.conn:
+            db.conn.commit()
     except Exception as e:
-        db.conn.rollback()
+        if db.conn:
+            db.conn.rollback()
         logger.error(f"Database error: {e}")
         raise
     finally:
