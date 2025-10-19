@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -11,6 +11,7 @@
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'IBM Plex Sans', sans-serif; line-height: 1.6; color: #111827; }
+
         .header { background: white; border-bottom: 1px solid #E5E7EB; padding: 1rem 2rem; position: sticky; top: 0; z-index: 1000; }
         .header-container { max-width: 1400px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; }
         .logo { font-size: 1.125rem; font-weight: 500; color: #111827; text-decoration: none; display: flex; align-items: center; gap: 0.5rem; }
@@ -18,14 +19,58 @@
         .nav-link { color: #6B7280; text-decoration: none; font-size: 0.875rem; transition: color 0.15s; }
         .nav-link:hover { color: #111827; }
         .btn-primary { padding: 0.5rem 1rem; background: #111827; color: white; border-radius: 0.375rem; text-decoration: none; font-size: 0.875rem; font-weight: 500; }
+
         .hero { background: #F9FAFB; padding: 6rem 2rem; text-align: center; }
         .hero-title { font-size: 2.25rem; font-weight: 300; margin-bottom: 1.5rem; }
         .hero-description { font-size: 1.125rem; color: #4B5563; max-width: 800px; margin: 0 auto; }
+
         .section { padding: 5rem 2rem; max-width: 1400px; margin: 0 auto; }
-        .section-title { font-size: 1.875rem; font-weight: 300; margin-bottom: 3rem; text-align: center; }
-        .content { font-size: 1rem; color: #374151; line-height: 1.7; }
+        .contact-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: start; }
+
+        .contact-info { }
+        .info-item { margin-bottom: 2rem; }
+        .info-icon { width: 24px; height: 24px; color: #0EA5E9; margin-bottom: 0.5rem; }
+        .info-title { font-size: 1.125rem; font-weight: 500; margin-bottom: 0.5rem; color: #111827; }
+        .info-text { color: #6B7280; font-size: 1rem; }
+        .info-link { color: #0EA5E9; text-decoration: none; }
+        .info-link:hover { text-decoration: underline; }
+
+        .contact-form-container { background: white; border: 1px solid #E5E7EB; border-radius: 0.75rem; padding: 2rem; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+        .form-title { font-size: 1.5rem; font-weight: 500; margin-bottom: 1.5rem; color: #111827; }
+
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem; }
+        .form-group { margin-bottom: 1rem; }
+        .form-label { display: block; font-size: 0.875rem; font-weight: 500; color: #374151; margin-bottom: 0.5rem; }
+        .form-input, .form-textarea { width: 100%; padding: 0.75rem; border: 1px solid #D1D5DB; border-radius: 0.375rem; font-size: 1rem; font-family: 'IBM Plex Sans', sans-serif; color: #111827; transition: all 0.15s; }
+        .form-input:focus, .form-textarea:focus { outline: none; border-color: #0EA5E9; box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1); }
+        .form-textarea { resize: vertical; min-height: 120px; }
+        .form-input.error { border-color: #EF4444; }
+
+        .form-error { display: none; color: #EF4444; font-size: 0.875rem; margin-top: 0.25rem; }
+        .form-error.visible { display: block; }
+
+        .btn-submit { width: 100%; padding: 0.75rem 1.5rem; background: #111827; color: white; border: none; border-radius: 0.375rem; font-size: 1rem; font-weight: 500; cursor: pointer; transition: all 0.15s; position: relative; }
+        .btn-submit:hover:not(:disabled) { background: #1F2937; }
+        .btn-submit:disabled { opacity: 0.6; cursor: not-allowed; }
+        .btn-submit.loading .btn-text { visibility: hidden; }
+        .btn-spinner { display: none; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 20px; height: 20px; border: 2px solid rgba(255, 255, 255, 0.3); border-top-color: white; border-radius: 50%; animation: spin 0.6s linear infinite; }
+        .btn-submit.loading .btn-spinner { display: block; }
+        @keyframes spin { to { transform: translate(-50%, -50%) rotate(360deg); } }
+
+        .alert { padding: 1rem; border-radius: 0.375rem; margin-bottom: 1.5rem; display: none; }
+        .alert.visible { display: block; }
+        .alert-success { background: #D1FAE5; border: 1px solid #10B981; color: #065F46; }
+        .alert-error { background: #FEE2E2; border: 1px solid #EF4444; color: #991B1B; }
+
         .footer { background: #111827; color: #9CA3AF; padding: 3rem 2rem; text-align: center; }
-        @media (max-width: 768px) { .hero { padding: 4rem 1.5rem; } .hero-title { font-size: 1.875rem; } }
+
+        @media (max-width: 768px) {
+            .hero { padding: 4rem 1.5rem; }
+            .hero-title { font-size: 1.875rem; }
+            .contact-grid { grid-template-columns: 1fr; gap: 2rem; }
+            .form-row { grid-template-columns: 1fr; }
+            .section { padding: 3rem 1.5rem; }
+        }
     </style>
 </head>
 <body>
@@ -41,20 +86,186 @@
             </nav>
         </div>
     </header>
+
     <section class="hero">
         <h1 class="hero-title">Get in touch with our team</h1>
         <p class="hero-description">Talk to our sales team about enterprise translation solutions for your business.</p>
     </section>
+
     <section class="section">
-        <div class="content">
-            <p>This page is under construction. Please check back soon for more information.</p>
+        <div class="contact-grid">
+            <div class="contact-info">
+                <div class="info-item">
+                    <i data-lucide="mail" class="info-icon"></i>
+                    <h3 class="info-title">Email Sales</h3>
+                    <p class="info-text">
+                        For sales inquiries and demos<br>
+                        <a href="mailto:sales@translatecloud.io" class="info-link">sales@translatecloud.io</a>
+                    </p>
+                </div>
+
+                <div class="info-item">
+                    <i data-lucide="headphones" class="info-icon"></i>
+                    <h3 class="info-title">Support</h3>
+                    <p class="info-text">
+                        For technical support and help<br>
+                        <a href="mailto:support@translatecloud.io" class="info-link">support@translatecloud.io</a>
+                    </p>
+                </div>
+
+                <div class="info-item">
+                    <i data-lucide="phone" class="info-icon"></i>
+                    <h3 class="info-title">Phone</h3>
+                    <p class="info-text">
+                        Monday - Friday, 9am - 6pm CET<br>
+                        <a href="tel:+34912345678" class="info-link">+34 91 234 5678</a>
+                    </p>
+                </div>
+
+                <div class="info-item">
+                    <i data-lucide="map-pin" class="info-icon"></i>
+                    <h3 class="info-title">Location</h3>
+                    <p class="info-text">
+                        Barcelona, Spain<br>
+                        European Union
+                    </p>
+                </div>
+            </div>
+
+            <div class="contact-form-container">
+                <h2 class="form-title">Send us a message</h2>
+
+                <div id="alert-container"></div>
+
+                <form id="contact-form">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="first-name" class="form-label">First Name *</label>
+                            <input type="text" id="first-name" class="form-input" required>
+                            <div class="form-error" id="first-name-error">Please enter your first name</div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="last-name" class="form-label">Last Name *</label>
+                            <input type="text" id="last-name" class="form-input" required>
+                            <div class="form-error" id="last-name-error">Please enter your last name</div>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="email" class="form-label">Work Email *</label>
+                            <input type="email" id="email" class="form-input" required>
+                            <div class="form-error" id="email-error">Please enter a valid email</div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="phone" class="form-label">Phone</label>
+                            <input type="tel" id="phone" class="form-input">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="company" class="form-label">Company Name *</label>
+                        <input type="text" id="company" class="form-input" required>
+                        <div class="form-error" id="company-error">Please enter your company name</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="message" class="form-label">Message *</label>
+                        <textarea id="message" class="form-textarea" required></textarea>
+                        <div class="form-error" id="message-error">Please enter your message</div>
+                    </div>
+
+                    <button type="submit" class="btn-submit" id="submit-btn">
+                        <span class="btn-text">Send Message</span>
+                        <div class="btn-spinner"></div>
+                    </button>
+                </form>
+            </div>
         </div>
     </section>
+
     <footer class="footer">
-        <p>Â© 2025 TranslateCloud. All rights reserved.</p>
+        <p>© 2025 TranslateCloud. All rights reserved.</p>
     </footer>
+
     <script src="../assets/js/cookies.js"></script>
+    <script src="../assets/js/api.js"></script>
     <script src="../assets/js/dark-mode.js"></script>
-    <script>lucide.createIcons();</script>
+    <script>
+        lucide.createIcons();
+
+        const form = document.getElementById('contact-form');
+        const submitBtn = document.getElementById('submit-btn');
+        const alertContainer = document.getElementById('alert-container');
+
+        function showAlert(type, message) {
+            alertContainer.innerHTML = `<div class="alert alert-${type} visible">${message}</div>`;
+            setTimeout(() => { alertContainer.innerHTML = ''; }, 5000);
+        }
+
+        function showError(input, show) {
+            const errorDiv = document.getElementById(`${input.id}-error`);
+            if (show) {
+                input.classList.add('error');
+                errorDiv.classList.add('visible');
+            } else {
+                input.classList.remove('error');
+                errorDiv.classList.remove('visible');
+            }
+        }
+
+        function setLoading(loading) {
+            submitBtn.disabled = loading;
+            submitBtn.classList.toggle('loading', loading);
+        }
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const firstName = document.getElementById('first-name');
+            const lastName = document.getElementById('last-name');
+            const email = document.getElementById('email');
+            const phone = document.getElementById('phone');
+            const company = document.getElementById('company');
+            const message = document.getElementById('message');
+
+            // Clear previous errors
+            [firstName, lastName, email, company, message].forEach(input => showError(input, false));
+
+            // Validation
+            let hasErrors = false;
+            if (!firstName.value.trim()) { showError(firstName, true); hasErrors = true; }
+            if (!lastName.value.trim()) { showError(lastName, true); hasErrors = true; }
+            if (!email.value.trim() || !email.value.includes('@')) { showError(email, true); hasErrors = true; }
+            if (!company.value.trim()) { showError(company, true); hasErrors = true; }
+            if (!message.value.trim()) { showError(message, true); hasErrors = true; }
+
+            if (hasErrors) return;
+
+            setLoading(true);
+
+            try {
+                const response = await API.post('/api/contact/sales', {
+                    first_name: firstName.value.trim(),
+                    last_name: lastName.value.trim(),
+                    email: email.value.trim(),
+                    phone: phone.value.trim() || null,
+                    company: company.value.trim(),
+                    message: message.value.trim()
+                });
+
+                showAlert('success', 'Thank you! We\'ll get back to you within 24 hours.');
+                form.reset();
+
+            } catch (error) {
+                console.error('Contact form error:', error);
+                showAlert('error', 'Unable to send message. Please email us directly at sales@translatecloud.io');
+            } finally {
+                setLoading(false);
+            }
+        });
+    </script>
 </body>
 </html>

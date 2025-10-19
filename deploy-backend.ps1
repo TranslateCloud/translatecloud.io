@@ -73,7 +73,7 @@ Write-Host "      Deployment directory ready" -ForegroundColor Green
 Write-Host "`n[3/8] Installing Python dependencies..." -ForegroundColor Yellow
 Write-Host "      This may take 2-3 minutes..." -ForegroundColor Gray
 
-$pipCommand = "pip install -r $BACKEND_DIR/requirements.txt -t $DEPLOY_DIR --platform manylinux2014_x86_64 --only-binary=:all: --upgrade"
+$pipCommand = "pip install -r $BACKEND_DIR/requirements.txt -t $DEPLOY_DIR --platform manylinux2014_x86_64 --python-version 3.11 --implementation cp --only-binary=:all: --upgrade"
 
 try {
     Invoke-Expression $pipCommand 2>&1 | Out-Null

@@ -3,8 +3,9 @@ uvicorn[standard]==0.32.0
 psycopg2-binary==2.9.11
 python-jose[cryptography]==3.3.0
 python-multipart==0.0.12
-pydantic>=2.10.0
-pydantic-settings>=2.6.0
+pydantic-core==2.41.4
+pydantic
+pydantic-settings
 boto3==1.35.0
 stripe==11.0.0
 email-validator==2.2.0
