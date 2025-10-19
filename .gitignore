@@ -27,10 +27,12 @@ lambda-package/
 .DS_Store
 Thumbs.db
 
-# AWS temp files
+# AWS temp files and credentials
 *.json
 !backend/src/**/*.json
 !docs/**/*.json
+db_config.json
+test_login.json
 
 # Backup & temp
 *-backup/
