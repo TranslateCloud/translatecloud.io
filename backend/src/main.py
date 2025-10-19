@@ -2,7 +2,9 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from src.api.routes import projects, translations, users, auth, payments
 from src.config.settings import settings
-from src.core.translation_service import TranslationService
+import logging
+
+logger = logging.getLogger(__name__)
 
 app = FastAPI(
     title="TranslateCloud API",
@@ -10,8 +12,33 @@ app = FastAPI(
     version="1.0.0"
 )
 
-# Initialize translation service (DeepL + MarianMT fallback)
-translation_service = TranslationService(deepl_api_key=settings.DEEPL_API_KEY)
+# Initialize translation service lazily on first request
+translation_service = None
+
+def get_translation_service():
+    """Lazy initialization of translation service"""
+    global translation_service
+    if translation_service is None:
+        from src.core.translation_service import TranslationService
+        from src.config.database import db
+
+        # Try AWS Secrets Manager first, then fall back to settings
+        deepl_key = None
+        try:
+            deepl_key = db.get_deepl_api_key()
+            if deepl_key:
+                logger.info("Using DeepL API key from AWS Secrets Manager")
+        except Exception as e:
+            logger.warning(f"Could not retrieve DeepL key from Secrets Manager: {e}")
+
+        if not deepl_key:
+            deepl_key = settings.DEEPL_API_KEY
+            logger.info("Using DeepL API key from environment settings")
+
+        translation_service = TranslationService(deepl_api_key=deepl_key)
+        logger.info("Translation service initialized")
+
+    return translation_service
 
 app.add_middleware(
     CORSMiddleware,
@@ -46,7 +73,8 @@ async def health_check():
 @app.get("/api/translation/status")
 async def get_translation_status():
     """Get translation service status and provider availability"""
-    status = translation_service.get_status()
+    service = get_translation_service()
+    status = service.get_status()
     return {
         "deepl_available": status['deepl_available'],
         "marian_available": status['marian_available'],
@@ -57,7 +85,8 @@ async def get_translation_status():
 @app.get("/api/translation/usage")
 async def get_translation_usage():
     """Get DeepL API usage statistics (if available)"""
-    usage = translation_service.get_deepl_usage()
+    service = get_translation_service()
+    usage = service.get_deepl_usage()
 
     if usage:
         return {

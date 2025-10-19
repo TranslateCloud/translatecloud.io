@@ -61,6 +61,18 @@ class Database:
         conn = self.connect()
         return conn.cursor()
 
+    def get_deepl_api_key(self) -> Optional[str]:
+        """
+        Get DeepL API key from AWS Secrets Manager
+        Returns None if not found
+        """
+        try:
+            creds = self.get_secret()
+            return creds.get('deepl_api_key')
+        except Exception as e:
+            logger.warning(f"Could not retrieve DeepL API key: {e}")
+            return None
+
 db = Database()
 
 def get_db():
