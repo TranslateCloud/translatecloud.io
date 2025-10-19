@@ -15,7 +15,7 @@ const DarkMode = (() => {
   const STORAGE_KEY = 'translatecloud_dark_mode';
   const DARK_CLASS = 'dark-mode';
 
-  // Dark mode color palette (enterprise-grade)
+  // Dark mode color palette (enterprise-grade with improved contrast)
   const darkStyles = `
     .dark-mode {
       --color-white: #0F172A;
@@ -35,6 +35,12 @@ const DarkMode = (() => {
 
       background-color: #0F172A;
       color: #FFFFFF;
+    }
+
+    /* Improved contrast for readability */
+    .dark-mode body {
+      background-color: #0F172A !important;
+      color: #F1F5F9 !important;
     }
 
     .dark-mode .login-brand,
@@ -227,13 +233,21 @@ const DarkMode = (() => {
       cursor: not-allowed !important;
     }
 
-    /* INPUTS AND FORMS */
+    /* INPUTS AND FORMS - IMPROVED CONTRAST */
     .dark-mode input,
     .dark-mode select,
     .dark-mode textarea {
-      background-color: #0F172A !important;
+      background-color: #1E293B !important;
       border-color: #475569 !important;
-      color: #E2E8F0 !important;
+      color: #F1F5F9 !important;
+    }
+
+    .dark-mode input:focus,
+    .dark-mode select:focus,
+    .dark-mode textarea:focus {
+      background-color: #1E293B !important;
+      border-color: #38BDF8 !important;
+      color: #FFFFFF !important;
     }
 
     .dark-mode input::placeholder,
@@ -242,7 +256,12 @@ const DarkMode = (() => {
     }
 
     .dark-mode label {
-      color: #E2E8F0 !important;
+      color: #F1F5F9 !important;
+      font-weight: 500 !important;
+    }
+
+    .dark-mode .form-label {
+      color: #F1F5F9 !important;
     }
 
     /* CARDS AND CONTAINERS */
