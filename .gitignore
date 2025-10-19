@@ -47,6 +47,7 @@ Audits/
 CLAUDE.md
 project-structure.txt
 powershell-history.csv
+DAY-*.md
 
 # Frontend (agregar después)
 frontend/node_modules/
