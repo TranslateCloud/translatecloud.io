@@ -444,7 +444,19 @@
                 data.pages.forEach(page => {
                     const div = document.createElement('div');
                     div.className = 'page-item';
-                    div.textContent = page.url || page;
+
+                    // Handle both object and string formats
+                    if (typeof page === 'string') {
+                        div.textContent = page;
+                    } else if (page && typeof page === 'object') {
+                        // Display URL and word count if available
+                        const url = page.url || page.path || 'Unknown URL';
+                        const words = page.word_count || page.words || 0;
+                        div.innerHTML = `
+                            <div class="page-url">${url}</div>
+                            ${words > 0 ? `<div class="page-words">${words} words</div>` : ''}
+                        `;
+                    }
                     pagesList.appendChild(div);
                 });
             }
@@ -455,17 +467,17 @@
             document.getElementById('step3').classList.remove('hidden');
 
             try {
-                // Start translation
+                // Start translation with pages array from crawl
                 const response = await API.post('/api/projects/translate', {
                     project_id: translationData.project_id,
-                    url: document.getElementById('website-url').value,
+                    pages: translationData.pages || [],
                     source_language: document.getElementById('source-lang').value,
-                    target_language: document.getElementById('target-lang').value,
-                    word_count: translationData.word_count
+                    target_language: document.getElementById('target-lang').value
                 });
 
-                // Poll for progress
-                pollProgress(response.project_id);
+                // Show completion
+                translationData.translatedPages = response.pages;
+                showCompletion(response);
 
             } catch (error) {
                 console.error('Translation error:', error);
@@ -499,14 +511,44 @@
             }, 2000);
         }
 
+        function showCompletion(response) {
+            document.getElementById('step3').classList.add('hidden');
+            document.getElementById('step4').classList.remove('hidden');
+
+            // Update progress to 100%
+            document.getElementById('progress-fill').style.width = '100%';
+            document.getElementById('progress-text').textContent =
+                `Translation complete! ${response.pages_translated} pages, ${response.total_words} words`;
+        }
+
         function showDownload() {
             document.getElementById('step3').classList.add('hidden');
             document.getElementById('step4').classList.remove('hidden');
         }
 
-        function downloadZip() {
-            if (translationData && translationData.download_url) {
-                window.location.href = translationData.download_url;
+        async function downloadZip() {
+            try {
+                // Call export endpoint to get ZIP file
+                const response = await API.post(`/api/projects/export/${translationData.project_id}`, {
+                    pages: translationData.translatedPages || [],
+                    target_language: document.getElementById('target-lang').value
+                }, {
+                    responseType: 'blob'  // Important for file download
+                });
+
+                // Create blob URL and trigger download
+                const blob = new Blob([response], { type: 'application/zip' });
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `translated-site-${translationData.project_id}.zip`;
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(url);
+                document.body.removeChild(a);
+            } catch (error) {
+                console.error('Download error:', error);
+                showError('Failed to download ZIP file. Please try again.');
             }
         }
 

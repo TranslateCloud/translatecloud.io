@@ -15,205 +15,162 @@ const DarkMode = (() => {
   const STORAGE_KEY = 'translatecloud_dark_mode';
   const DARK_CLASS = 'dark-mode';
 
-  // Dark mode color palette (enterprise-grade with improved contrast)
+  // Dark mode color palette (Notion/Excel professional style)
   const darkStyles = `
     .dark-mode {
-      --color-white: #0F172A;
-      --color-gray-50: #1E293B;
-      --color-gray-100: #334155;
-      --color-gray-200: #475569;
-      --color-gray-300: #64748B;
-      --color-gray-400: #94A3B8;
-      --color-gray-500: #CBD5E1;
-      --color-gray-600: #E2E8F0;
-      --color-gray-700: #F1F5F9;
-      --color-gray-800: #F8FAFC;
-      --color-gray-900: #FFFFFF;
-      --color-primary: #FFFFFF;
-      --color-accent: #38BDF8;
-      --color-accent-hover: #0EA5E9;
+      /* New professional color palette - Notion/Excel style */
+      --bg-primary: #0d0d0d;
+      --bg-secondary: #191919;
+      --bg-tertiary: #202020;
+      --bg-elevated: #2a2a2a;
+      --text-primary: #e6e6e6;
+      --text-secondary: #9b9b9b;
+      --text-tertiary: #6b6b6b;
+      --border-default: #333333;
+      --border-hover: #404040;
+      --accent: #00d4ff;
+      --accent-hover: #00b8e6;
+      --accent-bg: rgba(0, 212, 255, 0.08);
 
-      background-color: #0F172A;
-      color: #FFFFFF;
+      /* Override default CSS variables for compatibility */
+      --color-white: #0d0d0d;
+      --color-gray-50: #191919;
+      --color-gray-100: #202020;
+      --color-gray-200: #2a2a2a;
+      --color-gray-300: #333333;
+      --color-gray-400: #6b6b6b;
+      --color-gray-500: #9b9b9b;
+      --color-gray-600: #e6e6e6;
+      --color-gray-700: #e6e6e6;
+      --color-gray-800: #e6e6e6;
+      --color-gray-900: #ffffff;
+      --color-primary: #ffffff;
+      --color-accent: #00d4ff;
+      --color-accent-hover: #00b8e6;
+
+      background-color: #0d0d0d;
+      color: #e6e6e6;
     }
 
-    /* Improved contrast for readability */
+    /* Base styles */
     .dark-mode body {
-      background-color: #0F172A !important;
-      color: #F1F5F9 !important;
+      background-color: #0d0d0d !important;
+      color: #e6e6e6 !important;
     }
 
+    /* Navbar - fondo #191919 con bordes sutiles */
+    .dark-mode .header,
+    .dark-mode .navbar,
+    .dark-mode nav {
+      background-color: #191919 !important;
+      border-bottom: 1px solid #333333 !important;
+    }
+
+    /* Nav links - gris secundario con hover a texto primario */
+    .dark-mode .nav-link {
+      color: #9b9b9b !important;
+    }
+
+    .dark-mode .nav-link:hover {
+      color: #e6e6e6 !important;
+      background-color: rgba(255, 255, 255, 0.05) !important;
+    }
+
+    .dark-mode .nav-link.active {
+      background-color: #00d4ff !important;
+      color: #0d0d0d !important;
+    }
+
+    /* Sign In button - mantener cyan con texto oscuro */
+    .dark-mode .btn-primary,
+    .dark-mode .btn-login,
+    .dark-mode .btn-signup {
+      background-color: #00d4ff !important;
+      color: #0d0d0d !important;
+      border-color: #00d4ff !important;
+    }
+
+    .dark-mode .btn-primary:hover,
+    .dark-mode .btn-login:hover:not(:disabled),
+    .dark-mode .btn-signup:hover:not(:disabled) {
+      background-color: #00b8e6 !important;
+      border-color: #00b8e6 !important;
+    }
+
+    /* Secondary buttons */
+    .dark-mode .btn-secondary,
+    .dark-mode .btn-logout {
+      background-color: #202020 !important;
+      border-color: #333333 !important;
+      color: #e6e6e6 !important;
+    }
+
+    .dark-mode .btn-secondary:hover {
+      background-color: #2a2a2a !important;
+      border-color: #404040 !important;
+    }
+
+    /* Cards, Sidebar, Forms */
     .dark-mode .login-brand,
     .dark-mode .signup-brand,
-    .dark-mode .sidebar {
-      background-color: #1E293B;
-      border-color: #334155;
+    .dark-mode .sidebar,
+    .dark-mode .card,
+    .dark-mode .container,
+    .dark-mode .box {
+      background-color: #202020 !important;
+      border-color: #333333 !important;
     }
 
     .dark-mode .login-form,
     .dark-mode .signup-form,
     .dark-mode .section,
     .dark-mode .stat-card {
-      background-color: #1E293B;
-      border-color: #334155;
+      background-color: #202020 !important;
+      border-color: #333333 !important;
     }
 
+    /* Hover states for cards */
+    .dark-mode .card:hover,
+    .dark-mode .box:hover {
+      background-color: #2a2a2a !important;
+      border-color: #404040 !important;
+    }
+
+    /* Form inputs */
     .dark-mode .form-input,
+    .dark-mode input,
     .dark-mode select,
     .dark-mode textarea {
-      background-color: #0F172A;
-      border-color: #475569;
-      color: #FFFFFF;
+      background-color: #191919 !important;
+      border-color: #333333 !important;
+      color: #e6e6e6 !important;
     }
 
-    .dark-mode .form-input:focus {
-      border-color: #38BDF8;
-      box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.1);
+    .dark-mode .form-input:focus,
+    .dark-mode input:focus,
+    .dark-mode select:focus,
+    .dark-mode textarea:focus {
+      background-color: #191919 !important;
+      border-color: #00d4ff !important;
+      box-shadow: 0 0 0 3px rgba(0, 212, 255, 0.08) !important;
+      color: #ffffff !important;
     }
 
-    .dark-mode .btn-primary,
-    .dark-mode .btn-login,
-    .dark-mode .btn-signup {
-      background-color: #38BDF8;
-      color: #0F172A;
+    .dark-mode .form-input::placeholder,
+    .dark-mode input::placeholder,
+    .dark-mode textarea::placeholder {
+      color: #6b6b6b !important;
     }
 
-    .dark-mode .btn-primary:hover,
-    .dark-mode .btn-login:hover:not(:disabled),
-    .dark-mode .btn-signup:hover:not(:disabled) {
-      background-color: #0EA5E9;
+    /* Labels */
+    .dark-mode label,
+    .dark-mode .form-label {
+      color: #e6e6e6 !important;
     }
 
-    .dark-mode .btn-secondary,
-    .dark-mode .btn-logout {
-      background-color: #1E293B;
-      border-color: #475569;
-      color: #F1F5F9;
-    }
-
-    .dark-mode .alert-error {
-      background-color: rgba(239, 68, 68, 0.1);
-      border-color: rgba(239, 68, 68, 0.3);
-    }
-
-    .dark-mode .alert-success {
-      background-color: rgba(16, 185, 129, 0.1);
-      border-color: rgba(16, 185, 129, 0.3);
-    }
-
-    .dark-mode .nav-link:hover {
-      background-color: #334155;
-    }
-
-    .dark-mode .nav-link.active {
-      background-color: #38BDF8;
-      color: #0F172A;
-    }
-
-    /* Fix policy pages and content pages */
-    .dark-mode body {
-      background-color: #0F172A;
-      color: #E2E8F0;
-    }
-
-    .dark-mode h1,
-    .dark-mode h2,
-    .dark-mode h3,
-    .dark-mode h4,
-    .dark-mode h5,
-    .dark-mode h6 {
-      color: #FFFFFF;
-    }
-
-    .dark-mode p,
-    .dark-mode li,
-    .dark-mode td,
-    .dark-mode th,
-    .dark-mode span,
-    .dark-mode div {
-      color: #CBD5E1;
-    }
-
-    .dark-mode a {
-      color: #38BDF8;
-    }
-
-    .dark-mode a:hover {
-      color: #0EA5E9;
-    }
-
-    .dark-mode .content,
-    .dark-mode .content-container,
-    .dark-mode .main-content,
-    .dark-mode .policy-content,
-    .dark-mode article {
-      background-color: #1E293B;
-      color: #E2E8F0;
-    }
-
-    .dark-mode .header {
-      background-color: #1E293B;
-      border-bottom-color: #334155;
-    }
-
-    .dark-mode .footer {
-      background-color: #1E293B;
-      border-top-color: #334155;
-    }
-
-    .dark-mode strong,
-    .dark-mode b {
-      color: #F1F5F9;
-    }
-
-    .dark-mode table {
-      border-color: #475569;
-    }
-
-    .dark-mode thead {
-      background-color: #334155;
-    }
-
-    .dark-mode tbody tr {
-      border-bottom-color: #475569;
-    }
-
-    .dark-mode code,
-    .dark-mode pre {
-      background-color: #0F172A;
-      color: #38BDF8;
-      border-color: #475569;
-    }
-
-    /* CHECKOUT PAGE FIXES */
-    .dark-mode .checkout-container {
-      background-color: #0F172A !important;
-    }
-
-    .dark-mode .plan-details {
-      background-color: #1E293B !important;
-      border-color: #334155 !important;
-    }
-
-    .dark-mode .plan-name {
-      color: #FFFFFF !important;
-    }
-
-    .dark-mode .plan-price {
-      color: #38BDF8 !important;
-    }
-
-    .dark-mode .plan-billing {
-      color: #94A3B8 !important;
-    }
-
-    .dark-mode .loading {
-      color: #E2E8F0 !important;
-    }
-
-    /* ERROR/ALERT STATES - CRITICAL FIX */
-    .dark-mode .error,
-    .dark-mode .alert-error {
+    /* Alerts */
+    .dark-mode .alert-error,
+    .dark-mode .error {
       background-color: #7F1D1D !important;
       border-color: #991B1B !important;
       color: #FEE2E2 !important;
@@ -225,51 +182,169 @@ const DarkMode = (() => {
       color: #D1FAE5 !important;
     }
 
+    /* Typography - headings always white */
+    .dark-mode h1,
+    .dark-mode h2,
+    .dark-mode h3,
+    .dark-mode h4,
+    .dark-mode h5,
+    .dark-mode h6,
+    .dark-mode .hero-title,
+    .dark-mode .section-title {
+      color: #ffffff !important;
+    }
+
+    /* Text - primary gray */
+    .dark-mode p,
+    .dark-mode li,
+    .dark-mode td,
+    .dark-mode th,
+    .dark-mode span,
+    .dark-mode div {
+      color: #e6e6e6 !important;
+    }
+
+    /* Secondary text (descriptions, captions) */
+    .dark-mode .text-secondary,
+    .dark-mode .description,
+    .dark-mode .caption,
+    .dark-mode small {
+      color: #9b9b9b !important;
+    }
+
+    /* Links - cyan accent */
+    .dark-mode a {
+      color: #00d4ff !important;
+    }
+
+    .dark-mode a:hover {
+      color: #00b8e6 !important;
+    }
+
+    /* Content containers */
+    .dark-mode .content,
+    .dark-mode .content-container,
+    .dark-mode .main-content,
+    .dark-mode .policy-content,
+    .dark-mode article {
+      background-color: #202020 !important;
+      color: #e6e6e6 !important;
+    }
+
+    /* Header already defined above with navbar */
+
+    /* Footer */
+    .dark-mode .footer {
+      background-color: #191919 !important;
+      border-top: 1px solid #333333 !important;
+    }
+
+    /* Strong/bold text - slightly lighter */
+    .dark-mode strong,
+    .dark-mode b {
+      color: #ffffff !important;
+    }
+
+    /* Tables */
+    .dark-mode table {
+      border-color: #333333 !important;
+      background-color: #202020 !important;
+    }
+
+    .dark-mode thead,
+    .dark-mode th {
+      background-color: #191919 !important;
+      color: #e6e6e6 !important;
+      border-color: #333333 !important;
+    }
+
+    .dark-mode tbody tr {
+      border-bottom: 1px solid #333333 !important;
+    }
+
+    .dark-mode tbody tr:hover {
+      background-color: rgba(255, 255, 255, 0.05) !important;
+    }
+
+    /* Code blocks */
+    .dark-mode code,
+    .dark-mode pre {
+      background-color: #191919 !important;
+      color: #00d4ff !important;
+      border: 1px solid #333333 !important;
+    }
+
+    /* CHECKOUT PAGE */
+    .dark-mode .checkout-container {
+      background-color: #0d0d0d !important;
+    }
+
+    .dark-mode .plan-details {
+      background-color: #202020 !important;
+      border-color: #333333 !important;
+    }
+
+    .dark-mode .plan-name {
+      color: #ffffff !important;
+    }
+
+    .dark-mode .plan-price {
+      color: #00d4ff !important;
+    }
+
+    .dark-mode .plan-billing {
+      color: #9b9b9b !important;
+    }
+
+    .dark-mode .loading {
+      color: #e6e6e6 !important;
+    }
+
     /* DISABLED STATES */
     .dark-mode .btn:disabled,
     .dark-mode button:disabled {
-      background-color: #475569 !important;
-      color: #94A3B8 !important;
+      background-color: #2a2a2a !important;
+      color: #6b6b6b !important;
+      border-color: #333333 !important;
       cursor: not-allowed !important;
     }
 
-    /* INPUTS AND FORMS - IMPROVED CONTRAST */
-    .dark-mode input,
-    .dark-mode select,
-    .dark-mode textarea {
-      background-color: #1E293B !important;
-      border-color: #475569 !important;
-      color: #F1F5F9 !important;
+    /* LANGUAGE SWITCHER BUTTONS */
+    .dark-mode .lang-btn,
+    .dark-mode .language-btn {
+      background-color: #202020 !important;
+      color: #9b9b9b !important;
+      border-color: #333333 !important;
     }
 
-    .dark-mode input:focus,
-    .dark-mode select:focus,
-    .dark-mode textarea:focus {
-      background-color: #1E293B !important;
-      border-color: #38BDF8 !important;
-      color: #FFFFFF !important;
+    .dark-mode .lang-btn:hover,
+    .dark-mode .language-btn:hover {
+      background-color: #2a2a2a !important;
+      color: #e6e6e6 !important;
+      border-color: #404040 !important;
     }
 
-    .dark-mode input::placeholder,
-    .dark-mode textarea::placeholder {
-      color: #64748B !important;
+    .dark-mode .lang-btn.active,
+    .dark-mode .language-btn.active {
+      background-color: #00d4ff !important;
+      color: #0d0d0d !important;
+      border-color: #00d4ff !important;
     }
 
-    .dark-mode label {
-      color: #F1F5F9 !important;
-      font-weight: 500 !important;
+    /* LOGO TEXT */
+    .dark-mode .logo {
+      color: #ffffff !important;
     }
 
-    .dark-mode .form-label {
-      color: #F1F5F9 !important;
+    /* HERO SECTIONS */
+    .dark-mode .hero,
+    .dark-mode .hero-section {
+      background-color: #0d0d0d !important;
     }
 
-    /* CARDS AND CONTAINERS */
-    .dark-mode .card,
-    .dark-mode .container,
-    .dark-mode .box {
-      background-color: #1E293B !important;
-      border-color: #334155 !important;
+    .dark-mode .hero-description,
+    .dark-mode .hero-subtitle {
+      color: #9b9b9b !important;
     }
 
     * {
