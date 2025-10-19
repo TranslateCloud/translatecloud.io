@@ -13,6 +13,11 @@ class UserCreate(UserBase):
     last_name: Optional[str] = None
     cognito_sub: Optional[str] = None
 
+class LoginRequest(BaseModel):
+    """Schema for login endpoint - accepts JSON with email and password"""
+    email: EmailStr
+    password: str
+
 class UserUpdate(BaseModel):
     full_name: Optional[str] = None
     company: Optional[str] = None

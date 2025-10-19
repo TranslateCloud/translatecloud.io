@@ -46,4 +46,15 @@ class Settings(BaseSettings):
         env_file = ".env"
         case_sensitive = True
 
+# Singleton instance
+_settings = None
+
+def get_settings() -> Settings:
+    """Get settings singleton instance"""
+    global _settings
+    if _settings is None:
+        _settings = Settings()
+    return _settings
+
+# Default instance for backward compatibility
 settings = Settings()

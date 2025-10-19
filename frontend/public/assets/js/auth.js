@@ -130,6 +130,46 @@ const Auth = (() => {
   };
 
   // ============================================
+  // ERROR HANDLING UTILITIES
+  // ============================================
+
+  /**
+   * Format API error response for display
+   * Handles both string errors and FastAPI validation error arrays
+   * @param {Object} errorResponse - Error response from API
+   * @param {string} defaultMessage - Fallback message
+   * @returns {string} Formatted error message
+   */
+  const formatErrorMessage = (errorResponse, defaultMessage) => {
+    if (!errorResponse || !errorResponse.detail) {
+      return defaultMessage;
+    }
+
+    const detail = errorResponse.detail;
+
+    // If detail is a string, return it directly
+    if (typeof detail === 'string') {
+      return detail;
+    }
+
+    // If detail is an array of validation errors (FastAPI format)
+    if (Array.isArray(detail)) {
+      // Extract and format error messages
+      const messages = detail.map(err => {
+        // Get the field name from location array
+        const field = err.loc && err.loc.length > 1 ? err.loc[err.loc.length - 1] : 'field';
+        const message = err.msg || 'Invalid value';
+        return `${field}: ${message}`;
+      });
+
+      return messages.join(', ');
+    }
+
+    // Fallback for unknown error format
+    return defaultMessage;
+  };
+
+  // ============================================
   // AUTHENTICATION ACTIONS
   // ============================================
 
@@ -151,7 +191,8 @@ const Auth = (() => {
 
       if (!response.ok) {
         const error = await response.json();
-        throw new Error(error.detail || 'Login failed');
+        const errorMessage = formatErrorMessage(error, 'Login failed');
+        throw new Error(errorMessage);
       }
 
       const data = await response.json();
@@ -184,7 +225,8 @@ const Auth = (() => {
 
       if (!response.ok) {
         const error = await response.json();
-        throw new Error(error.detail || 'Signup failed');
+        const errorMessage = formatErrorMessage(error, 'Signup failed');
+        throw new Error(errorMessage);
       }
 
       const data = await response.json();

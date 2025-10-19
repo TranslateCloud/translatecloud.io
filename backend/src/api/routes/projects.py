@@ -178,17 +178,21 @@ async def crawl_website(
 @router.post("/translate")
 async def translate_website(
     project_id: str,
-    url: str,
+    pages: List[dict],
     source_language: str,
     target_language: str,
-    word_count: int,
     user_id: str,
     cursor: RealDictCursor = Depends(get_db)
 ):
     """Start website translation job"""
-    from src.core.marian_translator import translate_content
-    from src.core.html_reconstructor import rebuild_website
-    import boto3
+    from src.core.web_extractor import extractor
+    from src.core.translation_service import TranslationService
+    from src.core.html_reconstructor import reconstructor
+    from src.config.settings import get_settings
+    import logging
+
+    logger = logging.getLogger(__name__)
+    settings = get_settings()
 
     try:
         # Update project status
@@ -197,26 +201,114 @@ async def translate_website(
             ('processing', project_id, user_id)
         )
 
-        # This would normally be a background job via SQS
-        # For MVP, we'll process synchronously (with timeout limits)
+        # Initialize translation service with DeepL API key
+        translation_service = TranslationService(
+            deepl_api_key=settings.DEEPL_API_KEY if hasattr(settings, 'DEEPL_API_KEY') else None
+        )
 
-        # TODO: Implement actual translation pipeline
-        # 1. Extract HTML from crawled pages
-        # 2. Translate content using MarianMT or Claude API
-        # 3. Rebuild HTML with translated content
-        # 4. Generate ZIP file
-        # 5. Upload to S3
-        # 6. Update project with download URL
+        translated_pages = []
+        total_words_translated = 0
 
-        # For now, return pending status
+        # Process each page
+        for page_info in pages:
+            logger.info(f"Translating page: {page_info['url']}")
+
+            # 1. Crawl page to get full HTML and translatable elements
+            page_data = extractor.crawl_page(page_info['url'])
+
+            if not page_data:
+                logger.warning(f"Could not crawl page: {page_info['url']}")
+                continue
+
+            # 2. Translate all elements
+            translated_elements = []
+
+            for element in page_data['elements']:
+                result = await translation_service.translate(
+                    element['text'],
+                    source_language,
+                    target_language
+                )
+
+                if result['success']:
+                    translated_elements.append({
+                        **element,
+                        'translated_text': result['text'],
+                        'provider': result['provider']
+                    })
+                else:
+                    # Keep original if translation fails
+                    translated_elements.append({
+                        **element,
+                        'translated_text': element['text'],
+                        'provider': 'none'
+                    })
+
+            # 3. Translate metadata
+            title_result = await translation_service.translate(
+                page_data['title'],
+                source_language,
+                target_language
+            ) if page_data['title'] else None
+
+            meta_desc_result = await translation_service.translate(
+                page_data['meta_description'],
+                source_language,
+                target_language
+            ) if page_data['meta_description'] else None
+
+            # Add metadata to translated elements
+            if title_result and title_result['success']:
+                translated_elements.append({
+                    'tag': 'title',
+                    'text': page_data['title'],
+                    'translated_text': title_result['text']
+                })
+
+            if meta_desc_result and meta_desc_result['success']:
+                translated_elements.append({
+                    'tag': 'meta_description',
+                    'text': page_data['meta_description'],
+                    'translated_text': meta_desc_result['text']
+                })
+
+            # 4. Store page with translations
+            translated_pages.append({
+                'url': page_info['url'],
+                'url_path': page_info.get('url_path', 'index.html'),
+                'original_html': page_data['html_original'],
+                'translated_elements': translated_elements,
+                'word_count': page_data['word_count']
+            })
+
+            total_words_translated += page_data['word_count']
+
+        # Update project with translation results
+        cursor.execute('''
+            UPDATE projects
+            SET status = %s, translated_words = %s, updated_at = NOW()
+            WHERE id = %s
+        ''', ('completed', total_words_translated, project_id))
+
+        # Update user's word usage
+        cursor.execute('''
+            UPDATE users
+            SET words_used_this_month = words_used_this_month + %s
+            WHERE id = %s
+        ''', (total_words_translated, user_id))
+
+        logger.info(f"Translation completed: {len(translated_pages)} pages, {total_words_translated} words")
+
         return {
             'project_id': project_id,
-            'status': 'processing',
-            'progress': 0,
-            'status_message': 'Translation queued'
+            'status': 'completed',
+            'pages_translated': len(translated_pages),
+            'total_words': total_words_translated,
+            'pages': translated_pages
         }
 
     except Exception as e:
+        logger.error(f"Translation failed: {str(e)}")
         cursor.execute(
             "UPDATE projects SET status = %s WHERE id = %s",
             ('failed', project_id)
@@ -224,4 +316,56 @@ async def translate_website(
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Translation failed: {str(e)}"
+        )
+
+
+@router.post("/export/{project_id}")
+async def export_project(
+    project_id: str,
+    pages: List[dict],
+    target_language: str,
+    user_id: str,
+    cursor: RealDictCursor = Depends(get_db)
+):
+    """Export translated website as ZIP file"""
+    from src.core.html_reconstructor import rebuild_website
+    from fastapi.responses import FileResponse
+    import tempfile
+    import os
+
+    try:
+        # Verify project ownership
+        cursor.execute(
+            "SELECT * FROM projects WHERE id = %s AND user_id = %s",
+            (project_id, user_id)
+        )
+        project = cursor.fetchone()
+
+        if not project:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Project not found"
+            )
+
+        # Create temporary directory for ZIP
+        temp_dir = tempfile.mkdtemp()
+        output_path = os.path.join(temp_dir, f"translated-site-{project_id}")
+
+        # Build ZIP file
+        zip_path = rebuild_website(pages, target_language, output_path)
+
+        # Return ZIP file
+        return FileResponse(
+            path=zip_path,
+            media_type='application/zip',
+            filename=f"translated-site-{project_id}.zip",
+            headers={
+                'Content-Disposition': f'attachment; filename=translated-site-{project_id}.zip'
+            }
+        )
+
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Export failed: {str(e)}"
         )

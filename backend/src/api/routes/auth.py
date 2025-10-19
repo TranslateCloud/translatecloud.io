@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from psycopg2.extras import RealDictCursor
 from src.config.database import get_db
 from src.config.settings import settings
-from src.schemas.user import UserCreate, UserResponse
+from src.schemas.user import UserCreate, UserResponse, LoginRequest
 from passlib.context import CryptContext
 from jose import jwt
 from datetime import datetime, timedelta
@@ -93,18 +93,23 @@ async def signup(
 
 @router.post("/login")
 async def login(
-    email: str,
-    password: str,
+    login_data: LoginRequest,
     cursor: RealDictCursor = Depends(get_db)
 ):
-    # Get user
+    """
+    User login endpoint
+    Accepts JSON: {"email": "user@example.com", "password": "password123"}
+    Returns JWT token and user data
+    """
+    # Get user from database
     cursor.execute(
         "SELECT id, email, password_hash, full_name, plan, subscription_status, words_used_this_month, word_limit FROM users WHERE email = %s",
-        (email,)
+        (login_data.email,)
     )
     user = cursor.fetchone()
 
-    if not user or not pwd_context.verify(password, user['password_hash']):
+    # Verify user exists and password is correct
+    if not user or not pwd_context.verify(login_data.password, user['password_hash']):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Incorrect email or password"

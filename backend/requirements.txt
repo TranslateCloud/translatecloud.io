@@ -16,5 +16,13 @@ bcrypt==4.1.2
 # Translation services
 deepl==1.17.0
 
-# Web scraping (using html.parser instead of lxml to avoid compilation issues on Windows)
+# Web scraping
 beautifulsoup4==4.12.3
+lxml==5.1.0
+
+# MarianMT Translation (OPTIONAL - makes deployment >250MB)
+# Uncomment for local development or EC2 deployment
+# WARNING: Lambda has 250MB limit - use DeepL-only for Lambda
+# transformers==4.36.0
+# sentencepiece==0.1.99
+# torch==2.1.0
