@@ -1,12 +1,12 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from psycopg2.extras import RealDictCursor
 from src.config.database import get_db
+from src.config.settings import settings
 from src.schemas.user import UserCreate, UserResponse
 from passlib.context import CryptContext
 from jose import jwt
 from datetime import datetime, timedelta
 import uuid
-import os
 
 router = APIRouter()
 
@@ -14,7 +14,7 @@ router = APIRouter()
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 # JWT settings
-SECRET_KEY = os.getenv("JWT_SECRET_KEY", "your-secret-key-change-in-production")
+SECRET_KEY = settings.JWT_SECRET_KEY
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24  # 24 hours
 

@@ -12,3 +12,10 @@ requests==2.32.0
 mangum==0.18.0
 passlib[bcrypt]==1.7.4
 bcrypt==4.1.2
+
+# Translation services
+deepl==1.17.0
+
+# Web scraping
+beautifulsoup4==4.12.3
+lxml==5.1.0

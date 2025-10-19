@@ -143,9 +143,8 @@ async def crawl_website(
         project_id = str(uuid.uuid4())
         cursor.execute(
             '''
-            INSERT INTO projects (id, user_id, name, source_url, source_language, target_language,
-                                pages_count, word_count, status)
-            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
+            INSERT INTO projects (id, user_id, name, url, source_lang, target_lang, total_words, status)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
             RETURNING *
             ''',
             (
@@ -155,7 +154,6 @@ async def crawl_website(
                 url,
                 source_language,
                 target_language,
-                result['pages_count'],
                 result['word_count'],
                 'analyzed'
             )
