@@ -32,6 +32,14 @@ Each file should include:
   - Language mapping extensively commented
   - Error handling documented
 
+- [x] `backend/src/core/translation_service.py` - Translation orchestration
+  - 125-line comprehensive module docstring
+  - Architecture diagrams (orchestrator + fallback flow)
+  - Provider comparison table (DeepL vs MarianMT)
+  - 5 usage examples with expected outputs
+  - Error handling and performance metrics
+  - Deployment notes for Lambda vs Local
+
 ### Backend - API Routes
 - [x] `backend/src/api/routes/projects.py` - Project management endpoints (Header only)
   - Module docstring complete
@@ -53,11 +61,6 @@ Each file should include:
 ## ❌ Not Yet Documented
 
 ### Backend - Core Services (HIGH PRIORITY)
-- [ ] `backend/src/core/translation_service.py` - Translation orchestration
-  - Coordinates DeepL and MarianMT
-  - Fallback logic
-  - Error handling strategy
-
 - [ ] `backend/src/core/web_extractor.py` - Website crawler
   - BeautifulSoup HTML parsing
   - Element extraction logic
@@ -145,7 +148,7 @@ Each file should include:
 1. ✅ Lambda handler
 2. ✅ DeepL translator
 3. ⏳ Projects routes (complete endpoint comments)
-4. ❌ Translation service
+4. ✅ Translation service
 5. ❌ Web extractor
 6. ❌ HTML reconstructor
 
@@ -291,8 +294,8 @@ result = process(data)
 
 ## Progress Tracking
 
-### Completed Files: 3 / 25 (12%)
-- Backend: 3 / 20 (15%)
+### Completed Files: 4 / 25 (16%)
+- Backend: 4 / 20 (20%)
 - Frontend: 0 / 5 (0%)
 
 ### Estimated Time Remaining
