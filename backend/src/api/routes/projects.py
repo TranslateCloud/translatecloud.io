@@ -1,29 +1,185 @@
-from fastapi import APIRouter, Depends, HTTPException, status, Body
-from psycopg2.extras import RealDictCursor
-from src.config.database import get_db
-from src.schemas.project import ProjectCreate, ProjectResponse, ProjectUpdate
-from src.api.dependencies.jwt_auth import get_current_user_id
-from typing import List
-from pydantic import BaseModel, HttpUrl
-import uuid
+"""
+TranslateCloud - Project Management API Routes
 
+This module handles all project-related API endpoints including:
+- Project CRUD operations (Create, Read, Update, Delete)
+- Website crawling and analysis
+- Translation workflow management
+- Translated website export
+
+Architecture:
+    Frontend → API Gateway → Lambda → FastAPI → This Module → Services/Database
+
+Core Translation Flow:
+    1. Crawl: User provides URL → Web crawler extracts pages → Project created
+    2. Translate: Frontend sends pages → Translation service processes → Database updated
+    3. Export: Frontend requests ZIP → HTML reconstructor builds site → ZIP returned
+
+API Endpoints:
+    GET    /api/projects/              - List user's projects
+    POST   /api/projects/              - Create new project
+    GET    /api/projects/{id}          - Get project details
+    PUT    /api/projects/{id}          - Update project
+    DELETE /api/projects/{id}          - Delete project
+    POST   /api/projects/crawl         - Crawl website and analyze
+    POST   /api/projects/translate     - Translate crawled pages
+    POST   /api/projects/export/{id}   - Export as ZIP
+
+Performance Considerations:
+- Crawl endpoint: Can take 30s-5min depending on website size
+- Translate endpoint: Can take 1-5min for large websites
+- Export endpoint: ~5-30s depending on page count
+
+Error Handling:
+- 400: Bad request (validation errors)
+- 404: Project not found or unauthorized
+- 500: Server errors (crawl failed, translation failed, export failed)
+
+Security:
+- All endpoints require JWT authentication
+- User can only access their own projects
+- SQL injection prevention via parameterized queries
+
+Author: TranslateCloud Team
+Last Updated: October 20, 2025
+"""
+
+# ============================================================================
+# Standard Library Imports
+# ============================================================================
+import uuid          # For generating unique project IDs
+from typing import List  # For type hints
+
+# ============================================================================
+# Third-Party Imports
+# ============================================================================
+from fastapi import APIRouter, Depends, HTTPException, status, Body
+from psycopg2.extras import RealDictCursor  # PostgreSQL cursor with dict results
+from pydantic import BaseModel, HttpUrl     # Request/response models
+
+# ============================================================================
+# Local Application Imports
+# ============================================================================
+from src.config.database import get_db  # Database connection dependency
+from src.schemas.project import ProjectCreate, ProjectResponse, ProjectUpdate
+from src.api.dependencies.jwt_auth import get_current_user_id  # Auth dependency
+
+# ============================================================================
+# Router Configuration
+# ============================================================================
+# Create FastAPI router for project endpoints
+# This router is mounted at /api/projects in main.py
 router = APIRouter()
 
-# Request models for crawl and translate endpoints
+# ============================================================================
+# Request/Response Models
+# ============================================================================
+# These Pydantic models validate request bodies and define response structures
+
+
 class CrawlRequest(BaseModel):
+    """
+    Request model for POST /api/projects/crawl endpoint
+
+    Used to initiate website crawling and analysis before translation.
+
+    Attributes:
+        url (str): Website URL to crawl
+                  Example: "https://example.com"
+        source_language (str): Source language of the website
+                              Example: "en", "es", "auto"
+        target_language (str): Target language for translation
+                              Example: "es", "en", "pt-br"
+
+    Validation:
+        - url: Must be a valid URL format
+        - languages: No format validation (handled by translation service)
+
+    Example:
+        {
+            "url": "https://example.com",
+            "source_language": "en",
+            "target_language": "es"
+        }
+    """
     url: str
     source_language: str
     target_language: str
 
+
 class TranslateRequest(BaseModel):
+    """
+    Request model for POST /api/projects/translate endpoint
+
+    Used to translate pages that were previously crawled.
+
+    Attributes:
+        project_id (str): UUID of the project to translate
+        pages (List[dict]): Array of page objects from crawl result
+                           Each dict contains: url, url_path, word_count
+        source_language (str): Source language code
+        target_language (str): Target language code
+
+    Performance Notes:
+        - Large page lists (50+ pages) may exceed Lambda timeout
+        - Consider async architecture for 100+ pages
+
+    Example:
+        {
+            "project_id": "123e4567-e89b-12d3-a456-426614174000",
+            "pages": [
+                {"url": "https://example.com", "word_count": 500},
+                {"url": "https://example.com/about", "word_count": 300}
+            ],
+            "source_language": "en",
+            "target_language": "es"
+        }
+    """
     project_id: str
     pages: List[dict]
     source_language: str
     target_language: str
 
+
 class ExportRequest(BaseModel):
+    """
+    Request model for POST /api/projects/export/{project_id} endpoint
+
+    Used to export translated pages as a downloadable ZIP file.
+
+    Attributes:
+        pages (List[dict]): Translated pages with elements
+                           Each dict contains: url, url_path, original_html,
+                           translated_elements
+        target_language (str): Language code for lang attribute in HTML
+
+    ZIP Structure:
+        translated-site-{project_id}.zip/
+        ├── index.html              (homepage)
+        ├── about_us.html           (converted from /about-us)
+        ├── contact.html
+        └── css/                    (assets if included)
+
+    Example:
+        {
+            "pages": [
+                {
+                    "url": "https://example.com",
+                    "url_path": "index.html",
+                    "original_html": "<html>...",
+                    "translated_elements": [...]
+                }
+            ],
+            "target_language": "es"
+        }
+    """
     pages: List[dict]
     target_language: str
+
+
+# ============================================================================
+# API Endpoints
+# ============================================================================
 
 @router.get("/", response_model=List[ProjectResponse])
 async def get_projects(
