@@ -1,0 +1,30 @@
+fastapi==0.115.0
+uvicorn[standard]==0.32.0
+psycopg2-binary==2.9.11
+python-jose[cryptography]==3.3.0
+python-multipart==0.0.12
+pydantic-core==2.41.4
+pydantic
+pydantic-settings
+boto3==1.35.0
+stripe==11.0.0
+email-validator==2.2.0
+requests>=2.32.3
+mangum==0.18.0
+passlib[bcrypt]==1.7.4
+bcrypt==4.1.2
+
+# Translation services
+deepl==1.17.0
+
+# Web scraping
+beautifulsoup4==4.12.3
+lxml==6.0.1
+aiohttp==3.13.1
+
+# MarianMT Translation (OPTIONAL - makes deployment >250MB)
+# Uncomment for local development or EC2 deployment
+# WARNING: Lambda has 250MB limit - use DeepL-only for Lambda
+# transformers==4.36.0
+# sentencepiece==0.1.99
+# torch==2.1.0

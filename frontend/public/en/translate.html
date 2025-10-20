@@ -254,7 +254,7 @@
 <body>
     <div class="header">
         <div class="header-content">
-            <a href="/en/dashboard.html" class="logo">TranslateCloud</a>
+            <a href="/en/index.html" class="logo">TranslateCloud</a>
             <button class="btn btn-secondary" onclick="Auth.logout()">Sign Out</button>
         </div>
     </div>
@@ -302,7 +302,7 @@
             </div>
 
             <button class="btn btn-primary" id="crawl-btn" onclick="startCrawl()">
-                Analyze Website
+                Start Translation
             </button>
         </div>
 
@@ -386,7 +386,8 @@
         // Protect route
         Auth.requireAuth('/en/translate.html');
 
-        let translationData = null;
+        let currentJobId = null;
+        let pollInterval = null;
 
         async function startCrawl() {
             let url = document.getElementById('website-url').value.trim();
@@ -420,119 +421,71 @@
             try {
                 const btn = document.getElementById('crawl-btn');
                 btn.disabled = true;
-                btn.textContent = 'Analyzing...';
+                btn.textContent = 'Submitting...';
 
-                // Call backend crawler API
-                const response = await API.post('/api/projects/crawl', {
-                    url,
-                    source_language: sourceLang,
-                    target_language: targetLang
+                // Submit async translation job
+                const response = await API.post('/api/jobs/translate', {
+                    url: url,
+                    source_lang: sourceLang,
+                    target_lang: targetLang
                 });
 
-                translationData = response;
-                showPreview(response);
+                currentJobId = response.job_id;
+
+                // Skip preview, go directly to processing
+                document.getElementById('step1').classList.add('hidden');
+                document.getElementById('step3').classList.remove('hidden');
+
+                // Start polling job status
+                pollJobStatus(response.job_id);
 
             } catch (error) {
-                console.error('Crawl error:', error);
-                showError(error.message || 'Failed to analyze website. Please try again.');
+                console.error('Job submission error:', error);
+                showError(error.message || 'Failed to start translation. Please try again.');
                 document.getElementById('crawl-btn').disabled = false;
                 document.getElementById('crawl-btn').textContent = 'Analyze Website';
             }
         }
 
-        function showPreview(data) {
-            document.getElementById('step1').classList.add('hidden');
-            document.getElementById('step2').classList.remove('hidden');
-
-            document.getElementById('pages-count').textContent = data.pages_count || 0;
-            document.getElementById('words-count').textContent = data.word_count || 0;
-            document.getElementById('summary-words').textContent = data.word_count || 0;
-
-            const cost = ((data.word_count || 0) * 0.055).toFixed(2);
-            document.getElementById('total-cost').textContent = `&euro;${cost}`;
-
-            // Display pages
-            const pagesList = document.getElementById('pages-list');
-            pagesList.innerHTML = '';
-            if (data.pages && data.pages.length > 0) {
-                data.pages.forEach(page => {
-                    const div = document.createElement('div');
-                    div.className = 'page-item';
-
-                    // Handle both object and string formats
-                    if (typeof page === 'string') {
-                        div.textContent = page;
-                    } else if (page && typeof page === 'object') {
-                        // Display URL and word count if available
-                        const url = page.url || page.path || 'Unknown URL';
-                        const words = page.word_count || page.words || 0;
-                        div.innerHTML = `
-                            <div class="page-url">${url}</div>
-                            ${words > 0 ? `<div class="page-words">${words} words</div>` : ''}
-                        `;
-                    }
-                    pagesList.appendChild(div);
-                });
-            }
-        }
-
-        async function confirmTranslation() {
-            document.getElementById('step2').classList.add('hidden');
-            document.getElementById('step3').classList.remove('hidden');
-
-            try {
-                // Start translation with pages array from crawl
-                const response = await API.post('/api/projects/translate', {
-                    project_id: translationData.project_id,
-                    pages: translationData.pages || [],
-                    source_language: document.getElementById('source-lang').value,
-                    target_language: document.getElementById('target-lang').value
-                });
-
-                // Show completion
-                translationData.translatedPages = response.pages;
-                showCompletion(response);
-
-            } catch (error) {
-                console.error('Translation error:', error);
-                showError('Translation failed. Please try again.');
-                resetForm();
-            }
-        }
-
-        async function pollProgress(projectId) {
-            const interval = setInterval(async () => {
+        async function pollJobStatus(jobId) {
+            pollInterval = setInterval(async () => {
                 try {
-                    const status = await API.get(`/api/projects/${projectId}`);
+                    const job = await API.get(`/api/jobs/${jobId}`);
 
-                    const progress = status.progress || 0;
+                    // Update progress bar
+                    const progress = job.progress || 0;
                     document.getElementById('progress-fill').style.width = progress + '%';
-                    document.getElementById('progress-text').textContent =
-                        status.status_message || `Translating... ${progress}%`;
 
-                    if (status.status === 'completed') {
-                        clearInterval(interval);
-                        translationData.download_url = status.zip_file_url;
+                    // Update status message
+                    const statusMessages = {
+                        pending: 'Job queued, waiting to start...',
+                        processing: job.message || `Processing... ${progress}%`,
+                        completed: 'Translation complete!',
+                        failed: 'Translation failed',
+                        cancelled: 'Translation cancelled'
+                    };
+
+                    document.getElementById('progress-text').textContent =
+                        statusMessages[job.status] || job.message || 'Processing...';
+
+                    // Handle completion
+                    if (job.status === 'completed') {
+                        clearInterval(pollInterval);
                         showDownload();
-                    } else if (status.status === 'failed') {
-                        clearInterval(interval);
-                        showError('Translation failed. Please contact support.');
-                        resetForm();
+                    } else if (job.status === 'failed') {
+                        clearInterval(pollInterval);
+                        showError(job.error_message || 'Translation failed. Please try again.');
+                        setTimeout(() => resetForm(), 3000);
+                    } else if (job.status === 'cancelled') {
+                        clearInterval(pollInterval);
+                        showError('Translation was cancelled.');
+                        setTimeout(() => resetForm(), 3000);
                     }
                 } catch (error) {
                     console.error('Progress poll error:', error);
+                    // Don't clear interval on temporary errors, retry
                 }
             }, 2000);
-        }
-
-        function showCompletion(response) {
-            document.getElementById('step3').classList.add('hidden');
-            document.getElementById('step4').classList.remove('hidden');
-
-            // Update progress to 100%
-            document.getElementById('progress-fill').style.width = '100%';
-            document.getElementById('progress-text').textContent =
-                `Translation complete! ${response.pages_translated} pages, ${response.total_words} words`;
         }
 
         function showDownload() {
@@ -541,25 +494,28 @@
         }
 
         async function downloadZip() {
-            try {
-                // Call export endpoint to get ZIP file
-                const response = await API.post(`/api/projects/export/${translationData.project_id}`, {
-                    pages: translationData.translatedPages || [],
-                    target_language: document.getElementById('target-lang').value
-                }, {
-                    responseType: 'blob'  // Important for file download
-                });
+            if (!currentJobId) {
+                showError('No translation job found. Please start over.');
+                return;
+            }
 
-                // Create blob URL and trigger download
-                const blob = new Blob([response], { type: 'application/zip' });
-                const url = window.URL.createObjectURL(blob);
+            try {
+                // Download ZIP directly from S3 via presigned URL
+                const job = await API.get(`/api/jobs/${currentJobId}`);
+
+                if (job.status !== 'completed' || !job.result_file_url) {
+                    showError('Translation not ready for download yet.');
+                    return;
+                }
+
+                // Create download link
                 const a = document.createElement('a');
-                a.href = url;
-                a.download = `translated-site-${translationData.project_id}.zip`;
+                a.href = job.result_file_url;
+                a.download = `translated-site-${currentJobId}.zip`;
                 document.body.appendChild(a);
                 a.click();
-                window.URL.revokeObjectURL(url);
                 document.body.removeChild(a);
+
             } catch (error) {
                 console.error('Download error:', error);
                 showError('Failed to download ZIP file. Please try again.');
@@ -567,18 +523,28 @@
         }
 
         function resetForm() {
+            // Clear polling interval if active
+            if (pollInterval) {
+                clearInterval(pollInterval);
+                pollInterval = null;
+            }
+
+            // Reset UI
             document.getElementById('step1').classList.remove('hidden');
             document.getElementById('step2').classList.add('hidden');
             document.getElementById('step3').classList.add('hidden');
             document.getElementById('step4').classList.add('hidden');
             document.getElementById('error-alert').classList.add('hidden');
 
+            // Reset form fields
             document.getElementById('website-url').value = '';
             document.getElementById('crawl-btn').disabled = false;
-            document.getElementById('crawl-btn').textContent = 'Analyze Website';
+            document.getElementById('crawl-btn').textContent = 'Start Translation';
             document.getElementById('progress-fill').style.width = '0%';
+            document.getElementById('progress-text').textContent = 'Starting translation...';
 
-            translationData = null;
+            // Reset job tracking
+            currentJobId = null;
         }
 
         function showError(message) {
