@@ -48,11 +48,11 @@ FRONTEND_URL=http://localhost:3000
 aws lambda update-function-configuration \
   --function-name translatecloud-api \
   --environment "Variables={
-    DEEPL_API_KEY=65b6838b-3831-44e5-927d-385730a20973:fx,
-    JWT_SECRET_KEY=translatecloud-jwt-secret-2025-prod-secure-key-do-not-share,
-    STRIPE_SECRET_KEY=sk_test_your_key,
-    STRIPE_PUBLISHABLE_KEY=pk_test_your_key,
-    STRIPE_WEBHOOK_SECRET=whsec_your_secret,
+    DEEPL_API_KEY=your_deepl_api_key_here,
+    JWT_SECRET_KEY=your_jwt_secret_here,
+    STRIPE_SECRET_KEY=sk_test_your_key_here,
+    STRIPE_PUBLISHABLE_KEY=pk_test_your_key_here,
+    STRIPE_WEBHOOK_SECRET=whsec_your_secret_here,
     FRONTEND_URL=https://translatecloud.io
   }" \
   --region eu-west-1

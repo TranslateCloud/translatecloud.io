@@ -1,12 +1,29 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, Body
 from psycopg2.extras import RealDictCursor
 from src.config.database import get_db
 from src.schemas.project import ProjectCreate, ProjectResponse, ProjectUpdate
 from src.api.dependencies.jwt_auth import get_current_user_id
 from typing import List
+from pydantic import BaseModel, HttpUrl
 import uuid
 
 router = APIRouter()
+
+# Request models for crawl and translate endpoints
+class CrawlRequest(BaseModel):
+    url: str
+    source_language: str
+    target_language: str
+
+class TranslateRequest(BaseModel):
+    project_id: str
+    pages: List[dict]
+    source_language: str
+    target_language: str
+
+class ExportRequest(BaseModel):
+    pages: List[dict]
+    target_language: str
 
 @router.get("/", response_model=List[ProjectResponse])
 async def get_projects(
@@ -127,9 +144,7 @@ async def delete_project(
 
 @router.post("/crawl")
 async def crawl_website(
-    url: str,
-    source_language: str,
-    target_language: str,
+    request: CrawlRequest,
     user_id: str = Depends(get_current_user_id),
     cursor: RealDictCursor = Depends(get_db)
 ):
@@ -138,7 +153,7 @@ async def crawl_website(
 
     try:
         # Crawl website (max 50 pages for MVP)
-        result = await extract_web(url, max_pages=50)
+        result = await extract_web(request.url, max_pages=50)
 
         # Create project
         project_id = str(uuid.uuid4())
@@ -151,10 +166,10 @@ async def crawl_website(
             (
                 project_id,
                 user_id,
-                f"Translation: {url}",
-                url,
-                source_language,
-                target_language,
+                f"Translation: {request.url}",
+                request.url,
+                request.source_language,
+                request.target_language,
                 result['word_count'],
                 'analyzed'
             )
@@ -178,10 +193,7 @@ async def crawl_website(
 
 @router.post("/translate")
 async def translate_website(
-    project_id: str,
-    pages: List[dict],
-    source_language: str,
-    target_language: str,
+    request: TranslateRequest,
     user_id: str = Depends(get_current_user_id),
     cursor: RealDictCursor = Depends(get_db)
 ):
@@ -199,7 +211,7 @@ async def translate_website(
         # Update project status
         cursor.execute(
             "UPDATE projects SET status = %s WHERE id = %s AND user_id = %s",
-            ('processing', project_id, user_id)
+            ('processing', request.project_id, user_id)
         )
 
         # Initialize translation service with DeepL API key
@@ -211,7 +223,7 @@ async def translate_website(
         total_words_translated = 0
 
         # Process each page
-        for page_info in pages:
+        for page_info in request.pages:
             logger.info(f"Translating page: {page_info['url']}")
 
             # 1. Crawl page to get full HTML and translatable elements
@@ -227,8 +239,8 @@ async def translate_website(
             for element in page_data['elements']:
                 result = await translation_service.translate(
                     element['text'],
-                    source_language,
-                    target_language
+                    request.source_language,
+                    request.target_language
                 )
 
                 if result['success']:
@@ -248,14 +260,14 @@ async def translate_website(
             # 3. Translate metadata
             title_result = await translation_service.translate(
                 page_data['title'],
-                source_language,
-                target_language
+                request.source_language,
+                request.target_language
             ) if page_data['title'] else None
 
             meta_desc_result = await translation_service.translate(
                 page_data['meta_description'],
-                source_language,
-                target_language
+                request.source_language,
+                request.target_language
             ) if page_data['meta_description'] else None
 
             # Add metadata to translated elements
@@ -289,7 +301,7 @@ async def translate_website(
             UPDATE projects
             SET status = %s, translated_words = %s, updated_at = NOW()
             WHERE id = %s
-        ''', ('completed', total_words_translated, project_id))
+        ''', ('completed', total_words_translated, request.project_id))
 
         # Update user's word usage
         cursor.execute('''
@@ -301,7 +313,7 @@ async def translate_website(
         logger.info(f"Translation completed: {len(translated_pages)} pages, {total_words_translated} words")
 
         return {
-            'project_id': project_id,
+            'project_id': request.project_id,
             'status': 'completed',
             'pages_translated': len(translated_pages),
             'total_words': total_words_translated,
@@ -312,7 +324,7 @@ async def translate_website(
         logger.error(f"Translation failed: {str(e)}")
         cursor.execute(
             "UPDATE projects SET status = %s WHERE id = %s",
-            ('failed', project_id)
+            ('failed', request.project_id)
         )
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -323,8 +335,7 @@ async def translate_website(
 @router.post("/export/{project_id}")
 async def export_project(
     project_id: str,
-    pages: List[dict],
-    target_language: str,
+    request: ExportRequest,
     user_id: str = Depends(get_current_user_id),
     cursor: RealDictCursor = Depends(get_db)
 ):
@@ -353,7 +364,7 @@ async def export_project(
         output_path = os.path.join(temp_dir, f"translated-site-{project_id}")
 
         # Build ZIP file
-        zip_path = rebuild_website(pages, target_language, output_path)
+        zip_path = rebuild_website(request.pages, request.target_language, output_path)
 
         # Return ZIP file
         return FileResponse(
