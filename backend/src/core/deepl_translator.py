@@ -9,6 +9,49 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+# DeepL language code mapping (deprecated -> new format)
+# Based on DeepL API v2 requirements
+DEEPL_LANGUAGE_MAP = {
+    # English variants
+    'EN': 'EN-US',
+    'EN-US': 'EN-US',
+    'EN-GB': 'EN-GB',
+
+    # Portuguese variants
+    'PT': 'PT-BR',
+    'PT-BR': 'PT-BR',
+    'PT-PT': 'PT-PT',
+
+    # Standard languages (no variants needed)
+    'BG': 'BG',     # Bulgarian
+    'CS': 'CS',     # Czech
+    'DA': 'DA',     # Danish
+    'DE': 'DE',     # German
+    'EL': 'EL',     # Greek
+    'ES': 'ES',     # Spanish
+    'ET': 'ET',     # Estonian
+    'FI': 'FI',     # Finnish
+    'FR': 'FR',     # French
+    'HU': 'HU',     # Hungarian
+    'ID': 'ID',     # Indonesian
+    'IT': 'IT',     # Italian
+    'JA': 'JA',     # Japanese
+    'KO': 'KO',     # Korean
+    'LT': 'LT',     # Lithuanian
+    'LV': 'LV',     # Latvian
+    'NB': 'NB',     # Norwegian (Bokmål)
+    'NL': 'NL',     # Dutch
+    'PL': 'PL',     # Polish
+    'RO': 'RO',     # Romanian
+    'RU': 'RU',     # Russian
+    'SK': 'SK',     # Slovak
+    'SL': 'SL',     # Slovenian
+    'SV': 'SV',     # Swedish
+    'TR': 'TR',     # Turkish
+    'UK': 'UK',     # Ukrainian
+    'ZH': 'ZH',     # Chinese (simplified)
+}
+
 
 class DeepLTranslator:
     """
@@ -54,7 +97,13 @@ class DeepLTranslator:
         try:
             # DeepL requires uppercase language codes
             source = source_lang.upper() if source_lang != 'auto' else None
-            target = target_lang.upper()
+
+            # Map target language to DeepL format using the mapping
+            target_upper = target_lang.upper()
+            target = DEEPL_LANGUAGE_MAP.get(target_upper, target_upper)
+
+            if target not in DEEPL_LANGUAGE_MAP.values():
+                logger.warning(f"Language code '{target_lang}' not in DeepL map, using as-is")
 
             logger.info(f"DeepL translating: {source or 'auto'} -> {target}")
 
