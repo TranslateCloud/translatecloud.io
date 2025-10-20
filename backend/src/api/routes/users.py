@@ -44,7 +44,7 @@ async def update_user_profile(
     values.append(user_id)
     
     cursor.execute(
-        f"UPDATE users SET {set_clause}, updated_at = NOW() WHERE id = %s RETURNING *",
+        f"UPDATE users SET {set_clause} WHERE id = %s RETURNING *",
         values
     )
     

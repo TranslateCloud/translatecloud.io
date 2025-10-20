@@ -389,12 +389,26 @@
         let translationData = null;
 
         async function startCrawl() {
-            const url = document.getElementById('website-url').value;
+            let url = document.getElementById('website-url').value.trim();
             const sourceLang = document.getElementById('source-lang').value;
             const targetLang = document.getElementById('target-lang').value;
 
             if (!url) {
                 showError('Please enter a website URL');
+                return;
+            }
+
+            // Auto-correct URL: ensure it starts with http:// or https://
+            if (!url.startsWith('http://') && !url.startsWith('https://')) {
+                url = 'https://' + url;
+                document.getElementById('website-url').value = url; // Update input field
+            }
+
+            // Validate URL format
+            try {
+                new URL(url);
+            } catch (e) {
+                showError('Please enter a valid website URL (e.g., https://example.com)');
                 return;
             }
 

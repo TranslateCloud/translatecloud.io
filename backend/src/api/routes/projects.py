@@ -455,7 +455,7 @@ async def translate_website(
         # Update project with translation results
         cursor.execute('''
             UPDATE projects
-            SET status = %s, translated_words = %s, updated_at = NOW()
+            SET status = %s, translated_words = %s
             WHERE id = %s
         ''', ('completed', total_words_translated, request.project_id))
 
