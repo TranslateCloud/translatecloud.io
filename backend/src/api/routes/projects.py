@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from psycopg2.extras import RealDictCursor
 from src.config.database import get_db
 from src.schemas.project import ProjectCreate, ProjectResponse, ProjectUpdate
+from src.api.dependencies.jwt_auth import get_current_user_id
 from typing import List
 import uuid
 
@@ -129,7 +130,7 @@ async def crawl_website(
     url: str,
     source_language: str,
     target_language: str,
-    user_id: str,
+    user_id: str = Depends(get_current_user_id),
     cursor: RealDictCursor = Depends(get_db)
 ):
     """Crawl website and return page count and word count"""
@@ -181,7 +182,7 @@ async def translate_website(
     pages: List[dict],
     source_language: str,
     target_language: str,
-    user_id: str,
+    user_id: str = Depends(get_current_user_id),
     cursor: RealDictCursor = Depends(get_db)
 ):
     """Start website translation job"""
@@ -324,7 +325,7 @@ async def export_project(
     project_id: str,
     pages: List[dict],
     target_language: str,
-    user_id: str,
+    user_id: str = Depends(get_current_user_id),
     cursor: RealDictCursor = Depends(get_db)
 ):
     """Export translated website as ZIP file"""

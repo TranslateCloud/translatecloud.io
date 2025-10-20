@@ -91,7 +91,16 @@ const API = (() => {
 
       if (contentType && contentType.includes('application/json')) {
         const errorData = await response.json();
-        errorMessage = errorData.detail || errorData.message || errorMessage;
+
+        // Handle FastAPI validation errors (422) - detail is an array
+        if (Array.isArray(errorData.detail)) {
+          errorMessage = errorData.detail.map(err =>
+            `${err.loc ? err.loc.join('.') : 'field'}: ${err.msg || err.message || 'validation error'}`
+          ).join('; ');
+        } else {
+          errorMessage = errorData.detail || errorData.message || errorMessage;
+        }
+
         errorDetails = errorData;
       } else {
         const text = await response.text();
