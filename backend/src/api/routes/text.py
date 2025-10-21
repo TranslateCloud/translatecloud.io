@@ -9,6 +9,7 @@ from typing import List, Optional
 from src.core.translation_service import TranslationService
 from src.core.placeholder_protector import PlaceholderProtector
 from src.api.dependencies import get_current_user
+from src.config.settings import settings
 
 
 router = APIRouter(prefix="/api/text", tags=["text"])
@@ -118,7 +119,7 @@ async def translate_text(
     """
 
     try:
-        translation_service = TranslationService()
+        translation_service = TranslationService(deepl_api_key=settings.DEEPL_API_KEY)
         translations = []
 
         # Protect placeholders if requested
@@ -216,7 +217,7 @@ async def translate_batch(
         if len(request.texts) > 100:
             raise HTTPException(status_code=400, detail="Maximum 100 texts per batch")
 
-        translation_service = TranslationService()
+        translation_service = TranslationService(deepl_api_key=settings.DEEPL_API_KEY)
         results = []
         total_chars = 0
 

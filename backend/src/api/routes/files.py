@@ -14,6 +14,7 @@ from src.core.file_parser import FileParser, FileFormat, TranslationStatistics
 from src.core.placeholder_protector import PlaceholderProtector, PlaceholderStats
 from src.core.translation_service import TranslationService
 from src.api.dependencies import get_current_user
+from src.config.settings import settings
 
 
 router = APIRouter(prefix="/api/files", tags=["files"])
@@ -88,7 +89,7 @@ async def translate_file(
         protected_strings, placeholder_maps = PlaceholderProtector.protect_batch(strings)
 
         # Initialize translation service
-        translation_service = TranslationService()
+        translation_service = TranslationService(deepl_api_key=settings.DEEPL_API_KEY)
 
         # Translate to each target language
         translations_by_lang = {}
