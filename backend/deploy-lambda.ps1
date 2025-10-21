@@ -53,7 +53,8 @@ pip install --target="$DEPLOY_DIR" `
     mangum `
     psycopg2-binary `
     python-jose[cryptography] `
-    passlib[bcrypt] `
+    "passlib[bcrypt]" `
+    "bcrypt==4.0.1" `
     python-multipart `
     requests `
     beautifulsoup4 `
