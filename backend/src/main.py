@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from src.api.routes import projects, translations, users, auth, payments, jobs
+from src.api.routes import projects, translations, users, auth, payments, jobs, files, text
 from src.config.settings import settings
 import logging
 
@@ -55,6 +55,8 @@ app.include_router(projects.router, prefix="/api/projects", tags=["Projects"])
 app.include_router(translations.router, prefix="/api/translations", tags=["Translations"])
 app.include_router(payments.router, prefix="/api/payments", tags=["Payments"])
 app.include_router(jobs.router, tags=["Jobs"])
+app.include_router(files.router, tags=["Files"])
+app.include_router(text.router, tags=["Text"])
 
 @app.get("/")
 async def root():
