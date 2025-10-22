@@ -534,20 +534,41 @@
             }
 
             try {
-                // Download ZIP directly from S3 via presigned URL
+                // Verify job is completed first
                 const job = await API.get(`/api/jobs/${currentJobId}`);
 
-                if (job.status !== 'completed' || !job.download_url) {
+                if (job.status !== 'completed') {
                     showError('Translation not ready for download yet.');
                     return;
                 }
 
-                // Create download link
+                // Use download endpoint which generates fresh presigned URL and redirects
+                const token = localStorage.getItem('token');
+                const downloadUrl = `${API.BASE_URL}/api/jobs/${currentJobId}/download`;
+
+                // Fetch with auth header, then follow redirect
+                const response = await fetch(downloadUrl, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    redirect: 'follow'  // Follow the S3 redirect
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Download failed: ${response.statusText}`);
+                }
+
+                // Create blob from response and trigger download
+                const blob = await response.blob();
+                const url = window.URL.createObjectURL(blob);
                 const a = document.createElement('a');
-                a.href = job.download_url;
+                a.href = url;
                 a.download = `translated-site-${currentJobId}.zip`;
                 document.body.appendChild(a);
                 a.click();
+                window.URL.revokeObjectURL(url);
                 document.body.removeChild(a);
 
             } catch (error) {
