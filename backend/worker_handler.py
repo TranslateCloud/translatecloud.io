@@ -290,6 +290,17 @@ def process_translation_job(job_id: str, user_id: str, url: str, source_lang: st
         s3_url = f"s3://{bucket_name}/{file_key}"
         logger.info(f"[{job_id}] Uploaded to {s3_url}")
 
+        # Generate presigned URL for download (expires in 7 days)
+        download_url = s3.generate_presigned_url(
+            'get_object',
+            Params={
+                'Bucket': bucket_name,
+                'Key': file_key
+            },
+            ExpiresIn=604800  # 7 days in seconds
+        )
+        logger.info(f"[{job_id}] Generated download URL (expires in 7 days)")
+
         # ================================================================
         # Step 7: Mark as completed
         # ================================================================
@@ -300,6 +311,7 @@ def process_translation_job(job_id: str, user_id: str, url: str, source_lang: st
             pages_translated=total_pages,
             words_translated=words_translated,
             result_url=s3_url,
+            download_url=download_url,
             message="Translation completed successfully!"
         )
 
