@@ -386,8 +386,41 @@
         // Protect route
         Auth.requireAuth('/en/translate.html');
 
-        let currentJobId = null;
+        // Restore job ID from sessionStorage if page was refreshed
+        let currentJobId = sessionStorage.getItem('currentJobId') || null;
         let pollInterval = null;
+
+        // If we have a job ID, check its status and show download if completed
+        if (currentJobId) {
+            checkAndRestoreJob();
+        }
+
+        async function checkAndRestoreJob() {
+            try {
+                const job = await API.get(`/api/jobs/${currentJobId}`);
+
+                if (job.status === 'completed' && job.download_url) {
+                    // Show step 4 (download ready)
+                    document.getElementById('step1').classList.add('hidden');
+                    document.getElementById('step3').classList.add('hidden');
+                    document.getElementById('step4').classList.remove('hidden');
+                } else if (job.status === 'processing' || job.status === 'pending') {
+                    // Show step 3 (processing) and resume polling
+                    document.getElementById('step1').classList.add('hidden');
+                    document.getElementById('step3').classList.remove('hidden');
+                    updateProgress(job.progress || 0, job.message || 'Processing...');
+                    startPolling();
+                } else if (job.status === 'failed') {
+                    showError(job.error_message || 'Translation failed');
+                    resetForm();
+                }
+            } catch (error) {
+                console.error('Failed to restore job:', error);
+                // If job not found, clear sessionStorage
+                sessionStorage.removeItem('currentJobId');
+                currentJobId = null;
+            }
+        }
 
         async function startCrawl() {
             let url = document.getElementById('website-url').value.trim();
@@ -431,6 +464,7 @@
                 });
 
                 currentJobId = response.job_id;
+                sessionStorage.setItem('currentJobId', currentJobId);
 
                 // Skip preview, go directly to processing
                 document.getElementById('step1').classList.add('hidden');
@@ -545,6 +579,7 @@
 
             // Reset job tracking
             currentJobId = null;
+            sessionStorage.removeItem('currentJobId');
         }
 
         function showError(message) {
