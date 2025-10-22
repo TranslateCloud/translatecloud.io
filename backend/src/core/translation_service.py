@@ -257,7 +257,7 @@ class TranslationService:
             # All translate() calls will return errors
             logger.warning("No translators available - DeepL API key required for functionality")
 
-    async def translate(
+    def translate(
         self,
         text: str,
         source_lang: str,
@@ -295,7 +295,7 @@ class TranslationService:
         # STRATEGY 1: Try DeepL (primary)
         if self.deepl:
             logger.info(f"Attempting DeepL translation: {source_lang} -> {target_lang}")
-            result = await self.deepl.translate_text(text, source_lang, target_lang)
+            result = self.deepl.translate_text(text, source_lang, target_lang)
 
             if result:
                 logger.info(f"✓ DeepL translation successful ({len(result)} chars)")
@@ -337,7 +337,7 @@ class TranslationService:
             'error': error_msg
         }
 
-    async def translate_batch(
+    def translate_batch(
         self,
         texts: list[str],
         source_lang: str,
@@ -357,7 +357,7 @@ class TranslationService:
         results = []
 
         for text in texts:
-            result = await self.translate(text, source_lang, target_lang)
+            result = self.translate(text, source_lang, target_lang)
             results.append(result)
 
         return results

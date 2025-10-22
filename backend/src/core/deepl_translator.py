@@ -189,7 +189,7 @@ class DeepLTranslator:
         # Log successful initialization
         logger.info("DeepL translator initialized successfully")
 
-    async def translate_text(
+    def translate_text(
         self,
         text: str,
         source_lang: str,

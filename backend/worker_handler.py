@@ -165,22 +165,20 @@ def process_translation_job(job_id: str, user_id: str, url: str, source_lang: st
         logger.info(f"[{job_id}] Extracting translatable text")
 
         all_elements = []
-        total_words = 0
+        total_words = crawl_result['word_count']
 
+        # Elements are already extracted during crawl
         for i, page in enumerate(pages):
             update_job_status(
                 job_id=job_id,
                 status=JobStatus.PROCESSING,
                 progress=15 + int((i / total_pages) * 20),
-                message=f"Extracting text from page {i+1} of {total_pages}..."
+                message=f"Processing page {i+1} of {total_pages}..."
             )
 
-            elements = extractor.extract_translatable_elements(page['html'], page['url'])
+            # Get elements that were extracted during crawl
+            elements = page.get('elements', [])
             all_elements.extend(elements)
-
-            # Count words
-            page_words = sum(len(el['text'].split()) for el in elements)
-            total_words += page_words
 
         logger.info(f"[{job_id}] Extracted {len(all_elements)} elements ({total_words} words)")
 

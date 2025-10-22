@@ -104,7 +104,7 @@ class WebExtractor:
         """
         components = []
         child = element if element.name else element.parent
-        
+
         for parent in child.parents:
             siblings = parent.find_all(child.name, recursive=False)
             components.append(
@@ -112,93 +112,89 @@ class WebExtractor:
                 else f'{child.name}[{siblings.index(child) + 1}]'
             )
             child = parent
-        
+
         components.reverse()
         return '/' + '/'.join(components)
 
+    def crawl_website(self, base_url: str, max_pages: int = 50) -> Dict:
+        """
+        Crawl entire website starting from base_url
 
-def normalize_url(url: str) -> str:
-    """Remove fragments and trailing slashes"""
-    parsed = urlparse(url)
-    path = parsed.path.rstrip('/') if parsed.path != '/' else '/'
-    return f"{parsed.scheme}://{parsed.netloc}{path}"
+        Args:
+            base_url: Starting URL
+            max_pages: Maximum pages to crawl
 
+        Returns:
+            Dict with pages_count, word_count, and pages list
+        """
+        visited = set()
+        to_visit = [self._normalize_url(base_url)]
+        pages_data = []
+        total_words = 0
 
-async def crawl_website(base_url: str, max_pages: int = 50) -> Dict:
-    """
-    Crawl website starting from base_url
+        base_domain = urlparse(base_url).netloc
 
-    Args:
-        base_url: Starting URL
-        max_pages: Maximum pages to crawl
+        while to_visit and len(visited) < max_pages:
+            url = to_visit.pop(0)
 
-    Returns:
-        Dict with pages_count, word_count, and pages list
-    """
-    visited = set()
-    to_visit = [normalize_url(base_url)]
-    pages_data = []
-    total_words = 0
+            if url in visited:
+                continue
 
-    base_domain = urlparse(base_url).netloc
+            # Only crawl same domain
+            if urlparse(url).netloc != base_domain:
+                continue
 
-    while to_visit and len(visited) < max_pages:
-        url = to_visit.pop(0)
+            visited.add(url)
+            logger.info(f"Crawling {len(visited)}/{max_pages}: {url}")
 
-        if url in visited:
-            continue
+            # Crawl page
+            page_data = self.crawl_page(url)
 
-        # Only crawl same domain
-        if urlparse(url).netloc != base_domain:
-            continue
+            if page_data:
+                # Get URL path for filename
+                parsed_url = urlparse(url)
+                url_path = parsed_url.path.rstrip('/') or '/index'
+                if not url_path.endswith('.html'):
+                    url_path += '.html'
+                url_path = url_path.lstrip('/')
 
-        visited.add(url)
-        logger.info(f"Crawling {len(visited)}/{max_pages}: {url}")
+                pages_data.append({
+                    'url': url,
+                    'url_path': url_path,
+                    'title': page_data['title'],
+                    'word_count': page_data['word_count'],
+                    'meta_description': page_data['meta_description'],
+                    'html': page_data['html_original'],
+                    'elements': page_data['elements']
+                })
+                total_words += page_data['word_count']
 
-        # Crawl page
-        page_data = extractor.crawl_page(url)
+                # Extract links for further crawling
+                if len(visited) < max_pages:
+                    soup = BeautifulSoup(page_data['html_original'], 'html.parser')
+                    for link in soup.find_all('a', href=True):
+                        next_url = urljoin(url, link['href'])
+                        next_url = self._normalize_url(next_url)
 
-        if page_data:
-            # Get URL path for filename
-            parsed_url = urlparse(url)
-            url_path = parsed_url.path.rstrip('/') or '/index'
-            if not url_path.endswith('.html'):
-                url_path += '.html'
-            url_path = url_path.lstrip('/')
+                        # Filter: same domain, http/https only, not already queued
+                        parsed = urlparse(next_url)
+                        if (parsed.netloc == base_domain and
+                            parsed.scheme in ['http', 'https'] and
+                            next_url not in visited and
+                            next_url not in to_visit and
+                            not any(next_url.endswith(ext) for ext in ['.pdf', '.jpg', '.png', '.zip', '.css', '.js'])):
+                            to_visit.append(next_url)
 
-            pages_data.append({
-                'url': url,
-                'url_path': url_path,
-                'title': page_data['title'],
-                'word_count': page_data['word_count'],
-                'meta_description': page_data['meta_description']
-            })
-            total_words += page_data['word_count']
+        logger.info(f"Crawl complete: {len(pages_data)} pages, {total_words} words")
 
-            # Extract links for further crawling
-            if len(visited) < max_pages:
-                soup = BeautifulSoup(page_data['html_original'], 'html.parser')
-                for link in soup.find_all('a', href=True):
-                    next_url = urljoin(url, link['href'])
-                    next_url = normalize_url(next_url)
+        return {
+            'pages_count': len(pages_data),
+            'word_count': total_words,
+            'pages': pages_data
+        }
 
-                    # Filter: same domain, http/https only, not already queued
-                    parsed = urlparse(next_url)
-                    if (parsed.netloc == base_domain and
-                        parsed.scheme in ['http', 'https'] and
-                        next_url not in visited and
-                        next_url not in to_visit and
-                        not any(next_url.endswith(ext) for ext in ['.pdf', '.jpg', '.png', '.zip', '.css', '.js'])):
-                        to_visit.append(next_url)
-
-    logger.info(f"Crawl complete: {len(pages_data)} pages, {total_words} words")
-
-    return {
-        'pages_count': len(pages_data),
-        'word_count': total_words,
-        'pages': pages_data
-    }
-
-
-# Instancia global
-extractor = WebExtractor()
+    def _normalize_url(self, url: str) -> str:
+        """Remove fragments and trailing slashes"""
+        parsed = urlparse(url)
+        path = parsed.path.rstrip('/') if parsed.path != '/' else '/'
+        return f"{parsed.scheme}://{parsed.netloc}{path}"
