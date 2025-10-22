@@ -307,8 +307,12 @@ async def download_translation(
             ExpiresIn=3600  # 1 hour
         )
 
-        # Redirect to S3 presigned URL
-        return RedirectResponse(url=presigned_url)
+        # Return JSON with presigned URL (expires in 1 hour)
+        return {
+            "download_url": presigned_url,
+            "expires_in": 3600,
+            "filename": f"translated-site-{job_id}.zip"
+        }
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to generate download URL: {str(e)}")
