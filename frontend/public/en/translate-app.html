@@ -1,0 +1,842 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>App Translation | TranslateCloud</title>
+    <link rel="icon" type="image/svg+xml" href="/assets/images/favicon.svg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+        :root {
+            --color-primary: #111827;
+            --color-accent: #0EA5E9;
+            --color-accent-hover: #0284C7;
+            --color-white: #FFFFFF;
+            --color-gray-50: #F9FAFB;
+            --color-gray-100: #F3F4F6;
+            --color-gray-200: #E5E7EB;
+            --color-gray-300: #D1D5DB;
+            --color-gray-500: #6B7280;
+            --color-gray-600: #4B5563;
+            --color-gray-700: #374151;
+            --color-gray-900: #111827;
+            --color-success: #10B981;
+            --color-warning: #F59E0B;
+            --color-error: #EF4444;
+            --font-sans: 'IBM Plex Sans', sans-serif;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: var(--font-sans);
+            background-color: var(--color-gray-50);
+            color: var(--color-gray-900);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .header {
+            background: var(--color-white);
+            border-bottom: 1px solid var(--color-gray-200);
+            padding: 1rem 0;
+            margin-bottom: 2rem;
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--color-gray-900);
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1.5rem;
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: var(--color-gray-600);
+            text-decoration: none;
+            font-size: 0.875rem;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover {
+            color: var(--color-accent);
+        }
+
+        .btn {
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem;
+            font-weight: 500;
+            font-size: 0.875rem;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background: var(--color-accent);
+            color: var(--color-white);
+        }
+
+        .btn-primary:hover { background: var(--color-accent-hover); }
+        .btn-primary:disabled {
+            background: var(--color-gray-300);
+            cursor: not-allowed;
+        }
+
+        .btn-secondary {
+            background: var(--color-white);
+            color: var(--color-gray-700);
+            border: 1px solid var(--color-gray-300);
+        }
+
+        .card {
+            background: var(--color-white);
+            border-radius: 0.5rem;
+            padding: 2rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            margin-bottom: 1.5rem;
+        }
+
+        .card-title {
+            font-size: 1.25rem;
+            font-weight: 500;
+            margin-bottom: 1.5rem;
+            color: var(--color-gray-900);
+        }
+
+        .upload-area {
+            border: 2px dashed var(--color-gray-300);
+            border-radius: 0.5rem;
+            padding: 3rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: var(--color-gray-50);
+        }
+
+        .upload-area:hover {
+            border-color: var(--color-accent);
+            background: var(--color-white);
+        }
+
+        .upload-area.dragover {
+            border-color: var(--color-accent);
+            background: var(--color-accent);
+            background: rgba(14, 165, 233, 0.05);
+        }
+
+        .upload-icon {
+            width: 48px;
+            height: 48px;
+            margin: 0 auto 1rem;
+            color: var(--color-gray-400);
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .selected-file {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            background: var(--color-gray-50);
+            border-radius: 0.375rem;
+            margin-top: 1rem;
+        }
+
+        .file-icon {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--color-accent);
+            color: white;
+            border-radius: 0.375rem;
+            font-weight: 600;
+            font-size: 0.75rem;
+        }
+
+        .file-details {
+            flex: 1;
+        }
+
+        .file-name {
+            font-weight: 500;
+            color: var(--color-gray-900);
+        }
+
+        .file-size {
+            font-size: 0.875rem;
+            color: var(--color-gray-500);
+        }
+
+        .remove-file {
+            cursor: pointer;
+            color: var(--color-error);
+            padding: 0.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--color-gray-700);
+            margin-bottom: 0.5rem;
+        }
+
+        .form-select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--color-gray-300);
+            border-radius: 0.375rem;
+            font-size: 1rem;
+            font-family: var(--font-sans);
+        }
+
+        .form-select:focus {
+            outline: none;
+            border-color: var(--color-accent);
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+        }
+
+        .language-pills {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+
+        .language-pill {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 0.75rem;
+            background: var(--color-accent);
+            color: white;
+            border-radius: 1rem;
+            font-size: 0.875rem;
+        }
+
+        .remove-lang {
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .stat-card {
+            padding: 1rem;
+            background: var(--color-gray-50);
+            border-radius: 0.375rem;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--color-accent);
+        }
+
+        .stat-label {
+            font-size: 0.75rem;
+            color: var(--color-gray-600);
+            margin-top: 0.25rem;
+        }
+
+        .alert {
+            padding: 1rem;
+            border-radius: 0.375rem;
+            margin-bottom: 1rem;
+        }
+
+        .alert-info {
+            background: #DBEAFE;
+            color: #1E40AF;
+            border: 1px solid var(--color-accent);
+        }
+
+        .alert-success {
+            background: #D1FAE5;
+            color: #065F46;
+            border: 1px solid var(--color-success);
+        }
+
+        .alert-error {
+            background: #FEE2E2;
+            color: #991B1B;
+            border: 1px solid var(--color-error);
+        }
+
+        .hidden { display: none; }
+
+        .format-badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            background: var(--color-gray-100);
+            color: var(--color-gray-700);
+            border-radius: 1rem;
+            font-size: 0.75rem;
+            font-weight: 500;
+            margin-left: 0.5rem;
+        }
+
+        .supported-formats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .format-card {
+            padding: 1rem;
+            border: 1px solid var(--color-gray-200);
+            border-radius: 0.375rem;
+        }
+
+        .format-name {
+            font-weight: 600;
+            color: var(--color-gray-900);
+            margin-bottom: 0.5rem;
+        }
+
+        .format-platforms {
+            font-size: 0.875rem;
+            color: var(--color-gray-600);
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: var(--color-gray-200);
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 1rem 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--color-accent);
+            transition: width 0.3s;
+        }
+
+        @media (max-width: 768px) {
+            .grid-2 { grid-template-columns: 1fr; }
+            .stats-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-content">
+            <a href="/en/index.html" class="logo">TranslateCloud</a>
+            <div class="nav-links">
+                <a href="/en/translate.html">Website Translation</a>
+                <a href="/en/translate-app.html">App Translation</a>
+                <button class="btn btn-secondary" onclick="Auth.logout()">Sign Out</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Intro Card -->
+        <div class="card">
+            <h1 class="card-title">Translate Your App <span class="format-badge">JSON, XML, strings, ARB</span></h1>
+            <p style="color: var(--color-gray-600); margin-bottom: 1rem;">
+                Upload your localization files and translate them to multiple languages instantly.
+                Perfect for React Native, Android, iOS, and Flutter apps.
+            </p>
+
+            <!-- Supported Formats -->
+            <div class="supported-formats">
+                <div class="format-card">
+                    <div class="format-name">📦 JSON</div>
+                    <div class="format-platforms">React Native, React, Vue, Angular</div>
+                </div>
+                <div class="format-card">
+                    <div class="format-name">🤖 XML</div>
+                    <div class="format-platforms">Android strings.xml</div>
+                </div>
+                <div class="format-card">
+                    <div class="format-name">🍎 strings</div>
+                    <div class="format-platforms">iOS, macOS Localizable.strings</div>
+                </div>
+                <div class="format-card">
+                    <div class="format-name">🦋 ARB</div>
+                    <div class="format-platforms">Flutter Application Resource Bundle</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Upload Section -->
+        <div class="card" id="upload-section">
+            <h2 class="card-title">Step 1: Upload File</h2>
+
+            <div class="upload-area" id="upload-area" onclick="document.getElementById('file-input').click()">
+                <i data-lucide="upload" class="upload-icon"></i>
+                <p style="font-weight: 500; margin-bottom: 0.5rem;">Click to upload or drag and drop</p>
+                <p style="font-size: 0.875rem; color: var(--color-gray-500);">
+                    Supported: .json, .xml, .strings, .arb (max 10MB)
+                </p>
+                <input type="file" id="file-input" class="file-input" accept=".json,.xml,.strings,.arb">
+            </div>
+
+            <div id="selected-file" class="hidden"></div>
+        </div>
+
+        <!-- Analysis Results -->
+        <div class="card hidden" id="analysis-section">
+            <h2 class="card-title">Step 2: Analysis Results</h2>
+
+            <div class="alert alert-info" id="file-format-info"></div>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value" id="stat-keys">0</div>
+                    <div class="stat-label">Translation Keys</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="stat-chars">0</div>
+                    <div class="stat-label">Characters</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="stat-cost">$0.00</div>
+                    <div class="stat-label">Estimated Cost</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Language Selection -->
+        <div class="card hidden" id="language-section">
+            <h2 class="card-title">Step 3: Select Languages</h2>
+
+            <div class="grid-2">
+                <div class="form-group">
+                    <label class="form-label">Source Language</label>
+                    <select class="form-select" id="source-lang">
+                        <option value="en">English</option>
+                        <option value="es">Spanish</option>
+                        <option value="fr">French</option>
+                        <option value="de">German</option>
+                        <option value="it">Italian</option>
+                        <option value="pt">Portuguese</option>
+                        <option value="ru">Russian</option>
+                        <option value="ja">Japanese</option>
+                        <option value="zh">Chinese</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Add Target Language</label>
+                    <select class="form-select" id="target-lang-select" onchange="addTargetLanguage()">
+                        <option value="">Select language...</option>
+                        <option value="es">Spanish</option>
+                        <option value="fr">French</option>
+                        <option value="de">German</option>
+                        <option value="it">Italian</option>
+                        <option value="pt">Portuguese</option>
+                        <option value="en">English</option>
+                        <option value="ru">Russian</option>
+                        <option value="ja">Japanese</option>
+                        <option value="zh">Chinese</option>
+                        <option value="nl">Dutch</option>
+                        <option value="pl">Polish</option>
+                        <option value="sv">Swedish</option>
+                        <option value="da">Danish</option>
+                        <option value="fi">Finnish</option>
+                        <option value="no">Norwegian</option>
+                        <option value="cs">Czech</option>
+                        <option value="ro">Romanian</option>
+                        <option value="sk">Slovak</option>
+                        <option value="tr">Turkish</option>
+                        <option value="ko">Korean</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="language-pills" id="selected-languages"></div>
+
+            <button class="btn btn-primary" id="translate-btn" onclick="translateFile()" style="width: 100%; margin-top: 1.5rem;" disabled>
+                Translate to Selected Languages
+            </button>
+        </div>
+
+        <!-- Translation Progress -->
+        <div class="card hidden" id="progress-section">
+            <h2 class="card-title">Translating...</h2>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progress-fill" style="width: 0%"></div>
+            </div>
+            <p id="progress-text" style="text-align: center; color: var(--color-gray-600); margin-top: 1rem;">
+                Processing your file...
+            </p>
+        </div>
+
+        <!-- Results -->
+        <div class="card hidden" id="results-section">
+            <h2 class="card-title">Translation Complete!</h2>
+
+            <div class="alert alert-success">
+                Your app has been successfully translated to <span id="lang-count">0</span> language(s).
+            </div>
+
+            <button class="btn btn-primary" onclick="downloadResult()" style="width: 100%; margin-bottom: 1rem;">
+                <i data-lucide="download"></i>
+                Download Translated Files
+            </button>
+
+            <button class="btn btn-secondary" onclick="resetForm()" style="width: 100%;">
+                Translate Another File
+            </button>
+        </div>
+
+        <!-- Error Display -->
+        <div class="alert alert-error hidden" id="error-alert"></div>
+    </div>
+
+    <script src="../assets/js/cookies.js"></script>
+    <script src="../assets/js/api.js"></script>
+    <script src="../assets/js/auth.js"></script>
+
+    <script>
+        lucide.createIcons();
+
+        // Protect route
+        Auth.requireAuth('/en/translate-app.html');
+
+        let selectedFile = null;
+        let analysisResult = null;
+        let translationResult = null;
+        let targetLanguages = [];
+
+        // File upload handling
+        const uploadArea = document.getElementById('upload-area');
+        const fileInput = document.getElementById('file-input');
+
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('dragover');
+        });
+
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('dragover');
+        });
+
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                handleFileSelect(files[0]);
+            }
+        });
+
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                handleFileSelect(e.target.files[0]);
+            }
+        });
+
+        async function handleFileSelect(file) {
+            // Validate file type
+            const validExtensions = ['.json', '.xml', '.strings', '.arb'];
+            const fileExt = '.' + file.name.split('.').pop().toLowerCase();
+
+            if (!validExtensions.includes(fileExt)) {
+                showError(`Invalid file type. Supported: ${validExtensions.join(', ')}`);
+                return;
+            }
+
+            // Validate file size (max 10MB)
+            if (file.size > 10 * 1024 * 1024) {
+                showError('File too large. Maximum size: 10MB');
+                return;
+            }
+
+            selectedFile = file;
+            displaySelectedFile(file);
+
+            // Analyze file
+            await analyzeFile(file);
+        }
+
+        function displaySelectedFile(file) {
+            const container = document.getElementById('selected-file');
+            const fileExt = file.name.split('.').pop().toUpperCase();
+
+            container.innerHTML = `
+                <div class="selected-file">
+                    <div class="file-icon">${fileExt}</div>
+                    <div class="file-details">
+                        <div class="file-name">${file.name}</div>
+                        <div class="file-size">${formatFileSize(file.size)}</div>
+                    </div>
+                    <i data-lucide="x" class="remove-file" onclick="removeFile()"></i>
+                </div>
+            `;
+            container.classList.remove('hidden');
+            lucide.createIcons();
+        }
+
+        function removeFile() {
+            selectedFile = null;
+            analysisResult = null;
+            document.getElementById('selected-file').classList.add('hidden');
+            document.getElementById('analysis-section').classList.add('hidden');
+            document.getElementById('language-section').classList.add('hidden');
+            fileInput.value = '';
+        }
+
+        async function analyzeFile(file) {
+            try {
+                const formData = new FormData();
+                formData.append('file', file);
+
+                const response = await fetch(`${API.CONFIG.BASE_URL}/api/files/analyze`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${Auth.getToken()}`
+                    },
+                    body: formData
+                });
+
+                if (!response.ok) {
+                    throw new Error('Analysis failed');
+                }
+
+                analysisResult = await response.json();
+                displayAnalysis(analysisResult);
+
+            } catch (error) {
+                console.error('Analysis error:', error);
+                showError('Failed to analyze file. Please try again.');
+            }
+        }
+
+        function displayAnalysis(analysis) {
+            // Show analysis section
+            document.getElementById('analysis-section').classList.remove('hidden');
+            document.getElementById('language-section').classList.remove('hidden');
+
+            // Display format
+            document.getElementById('file-format-info').textContent =
+                `Detected format: ${analysis.format.toUpperCase()} - ${getFormatDescription(analysis.format)}`;
+
+            // Display stats
+            document.getElementById('stat-keys').textContent = analysis.statistics.total_keys.toLocaleString();
+            document.getElementById('stat-chars').textContent = analysis.statistics.total_characters.toLocaleString();
+            document.getElementById('stat-cost').textContent = `$${analysis.statistics.estimated_cost_usd.toFixed(4)}`;
+        }
+
+        function getFormatDescription(format) {
+            const descriptions = {
+                'json': 'React Native, React, Vue, Angular',
+                'xml': 'Android strings.xml',
+                'strings': 'iOS Localizable.strings',
+                'arb': 'Flutter ARB'
+            };
+            return descriptions[format] || 'Unknown format';
+        }
+
+        function addTargetLanguage() {
+            const select = document.getElementById('target-lang-select');
+            const langCode = select.value;
+            const langName = select.options[select.selectedIndex].text;
+
+            if (!langCode) return;
+
+            // Check if already added
+            if (targetLanguages.some(l => l.code === langCode)) {
+                select.value = '';
+                return;
+            }
+
+            // Add to list
+            targetLanguages.push({ code: langCode, name: langName });
+            renderTargetLanguages();
+
+            // Reset select
+            select.value = '';
+
+            // Enable translate button if at least one language selected
+            document.getElementById('translate-btn').disabled = targetLanguages.length === 0;
+        }
+
+        function removeTargetLanguage(langCode) {
+            targetLanguages = targetLanguages.filter(l => l.code !== langCode);
+            renderTargetLanguages();
+            document.getElementById('translate-btn').disabled = targetLanguages.length === 0;
+        }
+
+        function renderTargetLanguages() {
+            const container = document.getElementById('selected-languages');
+
+            if (targetLanguages.length === 0) {
+                container.innerHTML = '<p style="color: var(--color-gray-500); font-size: 0.875rem;">No target languages selected</p>';
+                return;
+            }
+
+            container.innerHTML = targetLanguages.map(lang => `
+                <div class="language-pill">
+                    <span>${lang.name}</span>
+                    <i data-lucide="x" class="remove-lang" onclick="removeTargetLanguage('${lang.code}')"></i>
+                </div>
+            `).join('');
+
+            lucide.createIcons();
+        }
+
+        async function translateFile() {
+            if (!selectedFile || targetLanguages.length === 0) return;
+
+            try {
+                // Hide other sections
+                document.getElementById('upload-section').classList.add('hidden');
+                document.getElementById('analysis-section').classList.add('hidden');
+                document.getElementById('language-section').classList.add('hidden');
+
+                // Show progress
+                document.getElementById('progress-section').classList.remove('hidden');
+                updateProgress(10, 'Uploading file...');
+
+                const sourceLang = document.getElementById('source-lang').value;
+                const targetLangs = targetLanguages.map(l => l.code).join(',');
+
+                const formData = new FormData();
+                formData.append('file', selectedFile);
+                formData.append('source_lang', sourceLang);
+                formData.append('target_langs', targetLangs);
+
+                updateProgress(30, 'Translating...');
+
+                const response = await fetch(`${API.CONFIG.BASE_URL}/api/files/translate`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${Auth.getToken()}`
+                    },
+                    body: formData
+                });
+
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.detail || 'Translation failed');
+                }
+
+                translationResult = await response.json();
+                updateProgress(100, 'Translation complete!');
+
+                setTimeout(() => {
+                    document.getElementById('progress-section').classList.add('hidden');
+                    displayResults();
+                }, 500);
+
+            } catch (error) {
+                console.error('Translation error:', error);
+                document.getElementById('progress-section').classList.add('hidden');
+                showError(`Translation failed: ${error.message}`);
+
+                // Show sections again
+                document.getElementById('upload-section').classList.remove('hidden');
+                document.getElementById('analysis-section').classList.remove('hidden');
+                document.getElementById('language-section').classList.remove('hidden');
+            }
+        }
+
+        function updateProgress(percent, message) {
+            document.getElementById('progress-fill').style.width = percent + '%';
+            document.getElementById('progress-text').textContent = message;
+        }
+
+        function displayResults() {
+            document.getElementById('results-section').classList.remove('hidden');
+            document.getElementById('lang-count').textContent = targetLanguages.length;
+        }
+
+        function downloadResult() {
+            if (!translationResult) return;
+
+            if (translationResult.content) {
+                // Single file or ZIP
+                const blob = new Blob([translationResult.content], { type: 'application/octet-stream' });
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = translationResult.filename;
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(url);
+                document.body.removeChild(a);
+            }
+        }
+
+        function resetForm() {
+            selectedFile = null;
+            analysisResult = null;
+            translationResult = null;
+            targetLanguages = [];
+
+            document.getElementById('upload-section').classList.remove('hidden');
+            document.getElementById('analysis-section').classList.add('hidden');
+            document.getElementById('language-section').classList.add('hidden');
+            document.getElementById('progress-section').classList.add('hidden');
+            document.getElementById('results-section').classList.add('hidden');
+            document.getElementById('selected-file').classList.add('hidden');
+            document.getElementById('error-alert').classList.add('hidden');
+
+            fileInput.value = '';
+            renderTargetLanguages();
+        }
+
+        function formatFileSize(bytes) {
+            if (bytes < 1024) return bytes + ' B';
+            if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+            return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+        }
+
+        function showError(message) {
+            const alert = document.getElementById('error-alert');
+            alert.textContent = message;
+            alert.classList.remove('hidden');
+            setTimeout(() => alert.classList.add('hidden'), 5000);
+        }
+    </script>
+</body>
+</html>

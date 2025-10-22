@@ -596,6 +596,271 @@
             flex-direction: column;
             gap: var(--space-4);
         }
+
+        /* File Upload Section */
+        .upload-section {
+            background-color: var(--color-white);
+            border: 1px solid var(--color-gray-200);
+            border-radius: var(--radius-lg);
+            padding: var(--space-6);
+            box-shadow: var(--shadow-sm);
+            margin-bottom: var(--space-6);
+        }
+
+        .upload-dropzone {
+            border: 2px dashed var(--color-gray-300);
+            border-radius: var(--radius-lg);
+            padding: var(--space-8);
+            text-align: center;
+            background-color: var(--color-gray-50);
+            transition: all var(--transition-fast);
+            cursor: pointer;
+        }
+
+        .upload-dropzone:hover,
+        .upload-dropzone.drag-over {
+            border-color: var(--color-accent);
+            background-color: #F0F9FF;
+        }
+
+        .upload-icon {
+            width: 48px;
+            height: 48px;
+            color: var(--color-gray-400);
+            margin: 0 auto var(--space-4);
+        }
+
+        .upload-title {
+            font-size: var(--text-lg);
+            font-weight: var(--font-medium);
+            color: var(--color-gray-900);
+            margin-bottom: var(--space-2);
+        }
+
+        .upload-text {
+            font-size: var(--text-sm);
+            color: var(--color-gray-600);
+            margin-bottom: var(--space-4);
+        }
+
+        .upload-formats {
+            font-size: var(--text-xs);
+            color: var(--color-gray-500);
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .btn-browse {
+            padding: var(--space-2) var(--space-4);
+            background-color: var(--color-white);
+            border: 1px solid var(--color-gray-300);
+            border-radius: var(--radius-md);
+            font-size: var(--text-sm);
+            font-weight: var(--font-medium);
+            color: var(--color-gray-700);
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            font-family: var(--font-sans);
+        }
+
+        .btn-browse:hover {
+            background-color: var(--color-gray-50);
+            border-color: var(--color-gray-400);
+        }
+
+        .file-info {
+            display: none;
+            padding: var(--space-4);
+            background-color: var(--color-gray-50);
+            border-radius: var(--radius-md);
+            margin-top: var(--space-4);
+        }
+
+        .file-info.show {
+            display: block;
+        }
+
+        .file-name {
+            font-size: var(--text-sm);
+            font-weight: var(--font-medium);
+            color: var(--color-gray-900);
+            margin-bottom: var(--space-2);
+            display: flex;
+            align-items: center;
+            gap: var(--space-2);
+        }
+
+        .file-details {
+            font-size: var(--text-sm);
+            color: var(--color-gray-600);
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: var(--space-2);
+        }
+
+        .language-selector {
+            display: none;
+            margin-top: var(--space-6);
+            padding-top: var(--space-6);
+            border-top: 1px solid var(--color-gray-200);
+        }
+
+        .language-selector.show {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: var(--space-4);
+        }
+
+        .form-label {
+            display: block;
+            font-size: var(--text-sm);
+            font-weight: var(--font-medium);
+            color: var(--color-gray-700);
+            margin-bottom: var(--space-2);
+        }
+
+        .form-select {
+            width: 100%;
+            padding: var(--space-2) var(--space-3);
+            border: 1px solid var(--color-gray-300);
+            border-radius: var(--radius-md);
+            font-size: var(--text-sm);
+            font-family: var(--font-sans);
+            color: var(--color-gray-900);
+            background-color: var(--color-white);
+        }
+
+        .language-pills {
+            display: flex;
+            flex-wrap: wrap;
+            gap: var(--space-2);
+            margin-top: var(--space-2);
+        }
+
+        .language-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--space-2);
+            padding: var(--space-2) var(--space-3);
+            background-color: var(--color-accent);
+            color: var(--color-white);
+            border-radius: var(--radius-md);
+            font-size: var(--text-sm);
+            font-weight: var(--font-medium);
+        }
+
+        .pill-remove {
+            cursor: pointer;
+            opacity: 0.8;
+            transition: opacity var(--transition-fast);
+        }
+
+        .pill-remove:hover {
+            opacity: 1;
+        }
+
+        .btn-translate {
+            padding: var(--space-3) var(--space-6);
+            background-color: var(--color-gray-900);
+            color: var(--color-white);
+            border: none;
+            border-radius: var(--radius-md);
+            font-size: var(--text-base);
+            font-weight: var(--font-medium);
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            font-family: var(--font-sans);
+            display: inline-flex;
+            align-items: center;
+            gap: var(--space-2);
+            margin-top: var(--space-4);
+        }
+
+        .btn-translate:hover {
+            background-color: var(--color-gray-800);
+        }
+
+        .btn-translate:disabled {
+            background-color: var(--color-gray-400);
+            cursor: not-allowed;
+        }
+
+        .translation-progress {
+            display: none;
+            margin-top: var(--space-4);
+            padding: var(--space-4);
+            background-color: #F0F9FF;
+            border-radius: var(--radius-md);
+        }
+
+        .translation-progress.show {
+            display: block;
+        }
+
+        .progress-text {
+            font-size: var(--text-sm);
+            color: var(--color-gray-700);
+            margin-bottom: var(--space-2);
+        }
+
+        .translation-results {
+            display: none;
+            margin-top: var(--space-4);
+            padding: var(--space-4);
+            background-color: #D1FAE5;
+            border-radius: var(--radius-md);
+        }
+
+        .translation-results.show {
+            display: block;
+        }
+
+        .results-title {
+            font-size: var(--text-base);
+            font-weight: var(--font-medium);
+            color: #065F46;
+            margin-bottom: var(--space-3);
+        }
+
+        .btn-secondary {
+            padding: var(--space-2) var(--space-4);
+            background-color: var(--color-white);
+            border: 1px solid var(--color-gray-300);
+            border-radius: var(--radius-md);
+            font-size: var(--text-sm);
+            font-weight: var(--font-medium);
+            color: var(--color-gray-700);
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            font-family: var(--font-sans);
+            display: inline-flex;
+            align-items: center;
+            gap: var(--space-2);
+        }
+
+        .btn-secondary:hover {
+            background-color: var(--color-gray-50);
+            border-color: var(--color-gray-400);
+        }
+
+        .error-message {
+            display: none;
+            padding: var(--space-3);
+            background-color: #FEE2E2;
+            border: 1px solid #FCA5A5;
+            border-radius: var(--radius-md);
+            color: #991B1B;
+            font-size: var(--text-sm);
+            margin-top: var(--space-4);
+        }
+
+        .error-message.show {
+            display: block;
+        }
 </style>
 </head>
 
@@ -717,6 +982,91 @@
                 </div>
             </div>
 
+            <!-- Mobile App File Translation -->
+            <div class="upload-section">
+                <div class="section-header" style="border-bottom: none; padding-bottom: 0; margin-bottom: var(--space-4);">
+                    <h2 class="section-title">Translate Mobile App Files</h2>
+                </div>
+
+                <div class="upload-dropzone" id="dropzone">
+                    <input type="file" id="file-input" class="file-input" accept=".json,.xml,.strings,.arb">
+                    <i data-lucide="upload-cloud" class="upload-icon"></i>
+                    <h3 class="upload-title">Drop your localization file here</h3>
+                    <p class="upload-text">or click to browse from your computer</p>
+                    <button type="button" class="btn-browse" onclick="document.getElementById('file-input').click()">
+                        Choose File
+                    </button>
+                    <p class="upload-formats">Supported: JSON, XML, .strings (iOS), .arb (Flutter) • Max 10MB</p>
+                </div>
+
+                <div class="error-message" id="error-message"></div>
+
+                <div class="file-info" id="file-info">
+                    <div class="file-name" id="file-name">
+                        <i data-lucide="file-text" style="width: 16px; height: 16px;"></i>
+                        <span></span>
+                    </div>
+                    <div class="file-details" id="file-details"></div>
+                </div>
+
+                <div class="language-selector" id="language-selector">
+                    <div class="form-group">
+                        <label class="form-label" for="source-lang-file">Source Language</label>
+                        <select class="form-select" id="source-lang-file">
+                            <option value="en">English</option>
+                            <option value="es">Spanish</option>
+                            <option value="fr">French</option>
+                            <option value="de">German</option>
+                            <option value="it">Italian</option>
+                            <option value="pt">Portuguese</option>
+                            <option value="nl">Dutch</option>
+                            <option value="pl">Polish</option>
+                            <option value="ru">Russian</option>
+                            <option value="ja">Japanese</option>
+                            <option value="ko">Korean</option>
+                            <option value="zh">Chinese (Simplified)</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="target-lang-file">Target Languages</label>
+                        <select class="form-select" id="target-lang-file">
+                            <option value="">Select language to add...</option>
+                            <option value="es">Spanish</option>
+                            <option value="fr">French</option>
+                            <option value="de">German</option>
+                            <option value="it">Italian</option>
+                            <option value="pt">Portuguese</option>
+                            <option value="nl">Dutch</option>
+                            <option value="pl">Polish</option>
+                            <option value="ru">Russian</option>
+                            <option value="ja">Japanese</option>
+                            <option value="ko">Korean</option>
+                            <option value="zh">Chinese (Simplified)</option>
+                            <option value="en">English</option>
+                        </select>
+                        <div class="language-pills" id="language-pills"></div>
+                    </div>
+
+                    <button class="btn-translate" id="btn-translate" disabled>
+                        <i data-lucide="languages" style="width: 20px; height: 20px;"></i>
+                        Translate Files
+                    </button>
+
+                    <div class="translation-progress" id="translation-progress">
+                        <p class="progress-text">Translating your file...</p>
+                    </div>
+
+                    <div class="translation-results" id="translation-results">
+                        <h4 class="results-title">Translation Complete!</h4>
+                        <button class="btn-secondary" id="btn-download-file">
+                            <i data-lucide="download" style="width: 16px; height: 16px;"></i>
+                            Download Result
+                        </button>
+                    </div>
+                </div>
+            </div>
+
             <!-- Translation Jobs -->
             <div class="section">
                 <div class="section-header">
@@ -802,6 +1152,247 @@
 
         // Call when backend is ready
         // loadDashboardStats();
+
+        // ============================================
+        // FILE UPLOAD FUNCTIONALITY
+        // ============================================
+
+        let selectedFile = null;
+        let targetLanguages = [];
+        let translationResult = null;
+
+        const dropzone = document.getElementById('dropzone');
+        const fileInput = document.getElementById('file-input');
+        const errorMessage = document.getElementById('error-message');
+        const fileInfo = document.getElementById('file-info');
+        const languageSelector = document.getElementById('language-selector');
+        const targetLangSelect = document.getElementById('target-lang-file');
+        const languagePills = document.getElementById('language-pills');
+        const btnTranslate = document.getElementById('btn-translate');
+        const translationProgress = document.getElementById('translation-progress');
+        const translationResults = document.getElementById('translation-results');
+        const btnDownloadFile = document.getElementById('btn-download-file');
+
+        // Drag and drop handlers
+        dropzone.addEventListener('click', (e) => {
+            if (e.target === dropzone || e.target.closest('.upload-dropzone')) {
+                fileInput.click();
+            }
+        });
+
+        dropzone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropzone.classList.add('drag-over');
+        });
+
+        dropzone.addEventListener('dragleave', () => {
+            dropzone.classList.remove('drag-over');
+        });
+
+        dropzone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropzone.classList.remove('drag-over');
+
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                handleFileSelect(files[0]);
+            }
+        });
+
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                handleFileSelect(e.target.files[0]);
+            }
+        });
+
+        async function handleFileSelect(file) {
+            // Validate file type
+            const validExtensions = ['.json', '.xml', '.strings', '.arb'];
+            const fileExt = '.' + file.name.split('.').pop().toLowerCase();
+
+            if (!validExtensions.includes(fileExt)) {
+                showError(`Invalid file type. Supported: ${validExtensions.join(', ')}`);
+                return;
+            }
+
+            // Validate file size (max 10MB)
+            if (file.size > 10 * 1024 * 1024) {
+                showError('File too large. Maximum size: 10MB');
+                return;
+            }
+
+            selectedFile = file;
+            hideError();
+
+            // Show file info
+            document.querySelector('#file-name span').textContent = file.name;
+            fileInfo.classList.add('show');
+
+            // Analyze file
+            await analyzeFile(file);
+
+            // Show language selector
+            languageSelector.classList.add('show');
+
+            lucide.createIcons();
+        }
+
+        async function analyzeFile(file) {
+            try {
+                const formData = new FormData();
+                formData.append('file', file);
+
+                const response = await fetch(`${API.CONFIG.BASE_URL}/api/files/analyze`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${Auth.getToken()}`
+                    },
+                    body: formData
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to analyze file');
+                }
+
+                const analysis = await response.json();
+
+                // Display analysis
+                const fileDetails = document.getElementById('file-details');
+                fileDetails.innerHTML = `
+                    <div><strong>Format:</strong> ${analysis.format}</div>
+                    <div><strong>Total Keys:</strong> ${analysis.total_keys}</div>
+                    <div><strong>Characters:</strong> ${analysis.total_characters.toLocaleString()}</div>
+                `;
+
+            } catch (error) {
+                console.error('Analysis error:', error);
+                showError('Failed to analyze file. Please try again.');
+            }
+        }
+
+        // Target language selection
+        targetLangSelect.addEventListener('change', (e) => {
+            const langCode = e.target.value;
+            if (!langCode) return;
+
+            const langName = e.target.options[e.target.selectedIndex].text;
+
+            // Check if already added
+            if (targetLanguages.some(l => l.code === langCode)) {
+                e.target.value = '';
+                return;
+            }
+
+            // Add language
+            targetLanguages.push({ code: langCode, name: langName });
+            updateLanguagePills();
+            updateTranslateButton();
+
+            // Reset select
+            e.target.value = '';
+        });
+
+        function updateLanguagePills() {
+            languagePills.innerHTML = targetLanguages.map(lang => `
+                <div class="language-pill">
+                    <span>${lang.name}</span>
+                    <span class="pill-remove" onclick="removeLanguage('${lang.code}')">
+                        <i data-lucide="x" style="width: 14px; height: 14px;"></i>
+                    </span>
+                </div>
+            `).join('');
+
+            lucide.createIcons();
+        }
+
+        function removeLanguage(code) {
+            targetLanguages = targetLanguages.filter(l => l.code !== code);
+            updateLanguagePills();
+            updateTranslateButton();
+        }
+
+        function updateTranslateButton() {
+            btnTranslate.disabled = targetLanguages.length === 0 || !selectedFile;
+        }
+
+        // Translate button
+        btnTranslate.addEventListener('click', async () => {
+            if (!selectedFile || targetLanguages.length === 0) return;
+
+            try {
+                btnTranslate.disabled = true;
+                translationProgress.classList.add('show');
+                hideError();
+
+                const sourceLang = document.getElementById('source-lang-file').value;
+                const targetLangs = targetLanguages.map(l => l.code).join(',');
+
+                const formData = new FormData();
+                formData.append('file', selectedFile);
+                formData.append('source_lang', sourceLang);
+                formData.append('target_langs', targetLangs);
+
+                const response = await fetch(`${API.CONFIG.BASE_URL}/api/files/translate`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${Auth.getToken()}`
+                    },
+                    body: formData
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.detail || 'Translation failed');
+                }
+
+                translationResult = await response.json();
+
+                // Show results
+                translationProgress.classList.remove('show');
+                translationResults.classList.add('show');
+
+            } catch (error) {
+                console.error('Translation error:', error);
+                translationProgress.classList.remove('show');
+                showError(`Translation failed: ${error.message}`);
+                btnTranslate.disabled = false;
+            }
+        });
+
+        // Download button
+        btnDownloadFile.addEventListener('click', () => {
+            if (!translationResult) return;
+
+            // If single file, download directly
+            if (translationResult.content) {
+                const blob = new Blob([translationResult.content], { type: 'text/plain' });
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = translationResult.filename || 'translated-file.txt';
+                a.click();
+                window.URL.revokeObjectURL(url);
+            }
+            // If multiple files (ZIP)
+            else if (translationResult.download_url) {
+                const a = document.createElement('a');
+                a.href = translationResult.download_url;
+                a.download = translationResult.filename || 'translations.zip';
+                a.click();
+            }
+        });
+
+        function showError(message) {
+            errorMessage.textContent = message;
+            errorMessage.classList.add('show');
+        }
+
+        function hideError() {
+            errorMessage.classList.remove('show');
+        }
+
+        // Make removeLanguage globally accessible
+        window.removeLanguage = removeLanguage;
     </script>
 
     <footer class="footer">
