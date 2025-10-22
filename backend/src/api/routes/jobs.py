@@ -134,12 +134,9 @@ async def get_job_status(
         failed_at=job.failed_at,
         message=job.message,
         error_message=job.error_message,
-        result_url=job.result_url
+        result_url=job.result_url,
+        download_url=job.download_url
     )
-
-    # Add download URL if completed
-    if job.status == JobStatus.COMPLETED and job.result_url:
-        response.download_url = f"/api/jobs/{job_id}/download"
 
     return response
 
@@ -191,11 +188,9 @@ async def list_user_jobs(
                 failed_at=job.failed_at,
                 message=job.message,
                 error_message=job.error_message,
-                result_url=job.result_url
+                result_url=job.result_url,
+                download_url=job.download_url
             )
-
-            if job.status == JobStatus.COMPLETED and job.result_url:
-                job_resp.download_url = f"/api/jobs/{job.job_id}/download"
 
             job_responses.append(job_resp)
 

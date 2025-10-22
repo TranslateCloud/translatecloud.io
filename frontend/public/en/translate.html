@@ -503,14 +503,14 @@
                 // Download ZIP directly from S3 via presigned URL
                 const job = await API.get(`/api/jobs/${currentJobId}`);
 
-                if (job.status !== 'completed' || !job.result_file_url) {
+                if (job.status !== 'completed' || !job.download_url) {
                     showError('Translation not ready for download yet.');
                     return;
                 }
 
                 // Create download link
                 const a = document.createElement('a');
-                a.href = job.result_file_url;
+                a.href = job.download_url;
                 a.download = `translated-site-${currentJobId}.zip`;
                 document.body.appendChild(a);
                 a.click();
