@@ -534,30 +534,25 @@
             }
 
             try {
-                // Step 1: Get fresh presigned URL from our API
+                // Get fresh presigned URL from our API
                 const downloadData = await API.get(`/api/jobs/${currentJobId}/download`);
 
                 if (!downloadData.download_url) {
                     throw new Error('No download URL received from server');
                 }
 
-                // Step 2: Fetch the file from S3 using presigned URL (no auth needed)
-                const response = await fetch(downloadData.download_url);
-
-                if (!response.ok) {
-                    throw new Error(`S3 download failed: ${response.statusText}`);
-                }
-
-                // Step 3: Create blob and trigger browser download
-                const blob = await response.blob();
-                const url = window.URL.createObjectURL(blob);
+                // Direct download using presigned URL (avoids CORS issues)
                 const a = document.createElement('a');
-                a.href = url;
+                a.href = downloadData.download_url;
                 a.download = downloadData.filename || `translated-site-${currentJobId}.zip`;
+                a.style.display = 'none';
                 document.body.appendChild(a);
                 a.click();
-                window.URL.revokeObjectURL(url);
-                document.body.removeChild(a);
+
+                // Clean up after a short delay
+                setTimeout(() => {
+                    document.body.removeChild(a);
+                }, 100);
 
                 console.log('Download started successfully');
 
