@@ -139,36 +139,90 @@ class HTMLReconstructor:
     ) -> str:
         """
         Genera entrada de sitemap XML para SEO
-        
+
         Args:
             original_url: URL de la página original
             target_lang: Idioma destino
             translated_pages: Lista de páginas traducidas
-            
+
         Returns:
             str: XML del sitemap entry
         """
         sitemap = ['<?xml version="1.0" encoding="UTF-8"?>']
         sitemap.append('<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"')
         sitemap.append('        xmlns:xhtml="http://www.w3.org/1999/xhtml">')
-        
+
         for page in translated_pages:
             sitemap.append('  <url>')
             sitemap.append(f'    <loc>{page["url"]}</loc>')
             sitemap.append(f'    <lastmod>{page.get("lastmod", "")}</lastmod>')
-            
+
             # Agregar alternativas de idioma
             for lang in page.get('alternate_langs', []):
                 sitemap.append(
                     f'    <xhtml:link rel="alternate" hreflang="{lang}" '
                     f'href="{page["url"].replace(target_lang, lang)}" />'
                 )
-            
+
             sitemap.append('  </url>')
-        
+
         sitemap.append('</urlset>')
-        
+
         return '\n'.join(sitemap)
+
+    def build_translated_site(
+        self,
+        pages: List[Dict],
+        translated_elements: List[Dict],
+        source_lang: str,
+        target_lang: str
+    ) -> bytes:
+        """
+        Build complete translated website as ZIP file
+
+        Args:
+            pages: List of pages from crawl (with 'html' and 'url_path')
+            translated_elements: List of translated elements
+            source_lang: Source language code
+            target_lang: Target language code
+
+        Returns:
+            bytes: ZIP file content
+        """
+        import zipfile
+        import io
+
+        # Create in-memory ZIP
+        zip_buffer = io.BytesIO()
+
+        try:
+            with zipfile.ZipFile(zip_buffer, 'w', zipfile.ZIP_DEFLATED) as zipf:
+                # Process each page
+                for page in pages:
+                    # Get elements for this page
+                    page_elements = [
+                        el for el in translated_elements
+                        if el.get('page_url') == page.get('url')
+                    ]
+
+                    # Reconstruct HTML with translations
+                    translated_html = self.reconstruct_page(
+                        page.get('html', ''),
+                        page_elements,
+                        target_lang
+                    )
+
+                    # Add to ZIP
+                    url_path = page.get('url_path', 'index.html')
+                    zipf.writestr(url_path, translated_html)
+
+            # Return ZIP bytes
+            zip_buffer.seek(0)
+            return zip_buffer.getvalue()
+
+        except Exception as e:
+            logger.error(f'Error building translated site: {str(e)}')
+            raise
 
 
 def rebuild_website(pages_data: List[Dict], target_lang: str, output_path: str) -> str:
