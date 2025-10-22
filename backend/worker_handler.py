@@ -276,6 +276,7 @@ def process_translation_job(job_id: str, user_id: str, url: str, source_lang: st
             Key=file_key,
             Body=zip_bytes,
             ContentType='application/zip',
+            ServerSideEncryption='AES256',
             Metadata={
                 'job_id': job_id,
                 'user_id': user_id,
