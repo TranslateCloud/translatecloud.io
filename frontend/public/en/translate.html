@@ -534,46 +534,36 @@
             }
 
             try {
-                // Verify job is completed first
-                const job = await API.get(`/api/jobs/${currentJobId}`);
+                // Step 1: Get fresh presigned URL from our API
+                const downloadData = await API.get(`/api/jobs/${currentJobId}/download`);
 
-                if (job.status !== 'completed') {
-                    showError('Translation not ready for download yet.');
-                    return;
+                if (!downloadData.download_url) {
+                    throw new Error('No download URL received from server');
                 }
 
-                // Use download endpoint which generates fresh presigned URL and redirects
-                const token = localStorage.getItem('token');
-                const downloadUrl = `${API.BASE_URL}/api/jobs/${currentJobId}/download`;
-
-                // Fetch with auth header, then follow redirect
-                const response = await fetch(downloadUrl, {
-                    method: 'GET',
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                        'Content-Type': 'application/json'
-                    },
-                    redirect: 'follow'  // Follow the S3 redirect
-                });
+                // Step 2: Fetch the file from S3 using presigned URL (no auth needed)
+                const response = await fetch(downloadData.download_url);
 
                 if (!response.ok) {
-                    throw new Error(`Download failed: ${response.statusText}`);
+                    throw new Error(`S3 download failed: ${response.statusText}`);
                 }
 
-                // Create blob from response and trigger download
+                // Step 3: Create blob and trigger browser download
                 const blob = await response.blob();
                 const url = window.URL.createObjectURL(blob);
                 const a = document.createElement('a');
                 a.href = url;
-                a.download = `translated-site-${currentJobId}.zip`;
+                a.download = downloadData.filename || `translated-site-${currentJobId}.zip`;
                 document.body.appendChild(a);
                 a.click();
                 window.URL.revokeObjectURL(url);
                 document.body.removeChild(a);
 
+                console.log('Download started successfully');
+
             } catch (error) {
                 console.error('Download error:', error);
-                showError('Failed to download ZIP file. Please try again.');
+                showError(`Failed to download ZIP file: ${error.message}`);
             }
         }
 

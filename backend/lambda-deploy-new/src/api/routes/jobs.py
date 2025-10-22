@@ -134,12 +134,9 @@ async def get_job_status(
         failed_at=job.failed_at,
         message=job.message,
         error_message=job.error_message,
-        result_url=job.result_url
+        result_url=job.result_url,
+        download_url=job.download_url
     )
-
-    # Add download URL if completed
-    if job.status == JobStatus.COMPLETED and job.result_url:
-        response.download_url = f"/api/jobs/{job_id}/download"
 
     return response
 
@@ -191,11 +188,9 @@ async def list_user_jobs(
                 failed_at=job.failed_at,
                 message=job.message,
                 error_message=job.error_message,
-                result_url=job.result_url
+                result_url=job.result_url,
+                download_url=job.download_url
             )
-
-            if job.status == JobStatus.COMPLETED and job.result_url:
-                job_resp.download_url = f"/api/jobs/{job.job_id}/download"
 
             job_responses.append(job_resp)
 
@@ -249,3 +244,71 @@ async def cancel_job(
 
     # Return 204 No Content
     return None
+
+
+@router.get("/{job_id}/download")
+async def download_translation(
+    job_id: str,
+    user_id: str = Depends(get_current_user_id)
+):
+    """
+    Generate fresh presigned URL for downloading translated website
+
+    Returns a redirect to S3 presigned URL (valid for 1 hour).
+    This ensures the download link is always fresh and valid.
+
+    Example:
+    ```bash
+    curl -X GET /api/jobs/550e8400-e29b-41d4-a716-446655440000/download \\
+      -H "Authorization: Bearer YOUR_TOKEN" \\
+      -L  # Follow redirect
+    ```
+    """
+    import boto3
+    from fastapi.responses import RedirectResponse
+
+    job = get_job(job_id)
+
+    if not job:
+        raise HTTPException(status_code=404, detail="Job not found")
+
+    # Verify user owns this job
+    if job.user_id != user_id:
+        raise HTTPException(status_code=403, detail="Not authorized to download this job")
+
+    # Verify job is completed
+    if job.status != JobStatus.COMPLETED:
+        raise HTTPException(status_code=400, detail=f"Job not completed yet (status: {job.status})")
+
+    # Verify result_url exists
+    if not job.result_url:
+        raise HTTPException(status_code=404, detail="Translation result not found")
+
+    # Parse S3 URL (format: s3://bucket/key)
+    if not job.result_url.startswith('s3://'):
+        raise HTTPException(status_code=500, detail="Invalid result URL format")
+
+    s3_url_parts = job.result_url[5:].split('/', 1)
+    if len(s3_url_parts) != 2:
+        raise HTTPException(status_code=500, detail="Invalid S3 URL")
+
+    bucket_name, file_key = s3_url_parts
+
+    # Generate fresh presigned URL (valid for 1 hour)
+    s3 = boto3.client('s3', region_name='eu-west-1')
+
+    try:
+        presigned_url = s3.generate_presigned_url(
+            'get_object',
+            Params={
+                'Bucket': bucket_name,
+                'Key': file_key
+            },
+            ExpiresIn=3600  # 1 hour
+        )
+
+        # Redirect to S3 presigned URL
+        return RedirectResponse(url=presigned_url)
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to generate download URL: {str(e)}")

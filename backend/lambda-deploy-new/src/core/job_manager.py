@@ -152,7 +152,8 @@ def update_job_status(
     words_translated: Optional[int] = None,
     message: Optional[str] = None,
     error_message: Optional[str] = None,
-    result_url: Optional[str] = None
+    result_url: Optional[str] = None,
+    download_url: Optional[str] = None
 ) -> bool:
     """
     Update job status and progress in DynamoDB
@@ -168,6 +169,7 @@ def update_job_status(
         message (str, optional): User-facing status message
         error_message (str, optional): Error details if failed
         result_url (str, optional): S3 URL of translated site (when completed)
+        download_url (str, optional): Presigned URL for downloading result (expires in 7 days)
 
     Returns:
         bool: True if update succeeded, False otherwise
@@ -225,6 +227,10 @@ def update_job_status(
         if result_url is not None:
             update_expr += ", result_url = :result_url"
             expr_attr_values[':result_url'] = result_url
+
+        if download_url is not None:
+            update_expr += ", download_url = :download_url"
+            expr_attr_values[':download_url'] = download_url
 
         # Set timestamp for status transitions
         if status == JobStatus.PROCESSING:

@@ -171,6 +171,7 @@ class DynamoDBJob(BaseModel):
     message: Optional[str] = None
     error_message: Optional[str] = None
     result_url: Optional[str] = None
+    download_url: Optional[str] = None
     ttl: int  # Unix timestamp for auto-deletion (7 days)
 
     class Config:
